@@ -51,7 +51,7 @@ export default function PracticeScreen() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/get-letter?user_id=student1`);
+      const response = await fetch(`${API_URL}/get-random-letter?user_id=student1`);
       const data = await response.json();
 
       if (data.success) {
@@ -88,7 +88,7 @@ export default function PracticeScreen() {
 
     try {
       const imageUri = await canvasRef.current.capture();
-      
+
       if (!imageUri) {
         Alert.alert('දෝෂයකි', 'චිත්‍රය ග්‍රහණය කිරීමට නොහැකි විය');
         setIsLoading(false);
@@ -98,7 +98,7 @@ export default function PracticeScreen() {
       // Use fetch to read the file as base64
       const response = await fetch(imageUri);
       const blob = await response.blob();
-      
+
       // Convert blob to base64
       const base64 = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
@@ -111,7 +111,7 @@ export default function PracticeScreen() {
         reader.readAsDataURL(blob);
       });
 
-      const apiResponse = await fetch(`${API_URL}/submit-handwriting`, {
+      const apiResponse = await fetch(`${API_URL}/predict`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -126,20 +126,20 @@ export default function PracticeScreen() {
 
       if (data.success) {
         setResult(data);
-        
+
         const scoreEmoji = data.score >= 90 ? '🌟' : data.score >= 75 ? '👍' : '💪';
         Alert.alert(
           `${scoreEmoji} ප්‍රතිඵලය (Result)`,
           `ලකුණු (Score): ${data.score.toFixed(1)}%\n\n${data.feedback}`,
           [
-            { 
-              text: 'නැවත උත්සාහ කරන්න', 
+            {
+              text: 'නැවත උත්සාහ කරන්න',
               onPress: clearCanvas,
               style: 'cancel'
             },
-            { 
-              text: 'ඊළඟ අකුර', 
-              onPress: fetchNewLetter 
+            {
+              text: 'ඊළඟ අකුර',
+              onPress: fetchNewLetter
             },
           ]
         );
