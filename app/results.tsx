@@ -108,7 +108,7 @@ export default function ResultsScreen() {
                     <Text style={styles.tipText}>• Listen carefully to each word</Text>
                     <Text style={styles.tipText}>• Speak clearly and at a steady pace</Text>
                     <Text style={styles.tipText}>• Practice difficult words multiple times</Text>
-                    <Text style={styles.tipText}>• Don't skip any words</Text>
+                    <Text style={styles.tipText}>• Don&apos;t skip any words</Text>
                 </View>
             </ScrollView>
         </SafeAreaView>
