@@ -2,11 +2,11 @@ import axios from 'axios';
 import { Platform } from 'react-native';
 
 // Android Emulator uses 10.0.2.2 for localhost
-const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:8000/api' : 'http://localhost:8000/api';
+const API_URL = Platform.OS === 'android' ? 'http://10.0.2.2:5000/api' : 'http://localhost:5000/api';
 
 const api = axios.create({
-  baseURL: API_URL,
-  timeout: 5000,
+    baseURL: API_URL,
+    timeout: 5000,
 });
 
 export const getStories = async () => {
