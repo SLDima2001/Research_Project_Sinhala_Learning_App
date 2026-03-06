@@ -32,6 +32,16 @@ export default function TabLayout() {
           ),
         }}
       />
+      <Tabs.Screen
+        name="components-test"
+        options={{
+          title: 'Test',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'flask' : 'flask-outline'} size={24} color={color} />
+          ),
+          tabBarActiveTintColor: '#6366F1',
+        }}
+      />
     </Tabs>
   );
 }
