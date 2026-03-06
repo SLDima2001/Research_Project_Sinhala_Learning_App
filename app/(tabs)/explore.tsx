@@ -31,13 +31,13 @@ export default function ExploreScreen() {
 
   const checkApiStatus = async () => {
     try {
-      const response = await fetch(`${API_URL}/health`, { 
+      const response = await fetch(`${API_URL}/health`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' }
       });
       const data = await response.json();
       setApiStatus(data.status === 'healthy' ? 'online' : 'offline');
-    } catch (error) {
+    } catch (_error) {
       setApiStatus('offline');
     }
   };
@@ -47,7 +47,7 @@ export default function ExploreScreen() {
     try {
       const response = await fetch(`${API_URL}/get-all-letters`);
       const data = await response.json();
-      
+
       if (data.success) {
         setLetters(data.letters);
       }
@@ -61,7 +61,7 @@ export default function ExploreScreen() {
   const testConnection = async () => {
     Alert.alert('පරීක්ෂා කරමින්...', 'API සම්බන්ධතාවය පරීක්ෂා කරමින්');
     await checkApiStatus();
-    
+
     if (apiStatus === 'online') {
       Alert.alert('✓ සාර්ථකයි!', 'API සේවාදායකය සමඟ සම්බන්ධ වී ඇත');
     } else {
@@ -86,13 +86,13 @@ export default function ExploreScreen() {
         </ThemedText>
         <View style={styles.statusRow}>
           <View style={[
-            styles.statusDot, 
+            styles.statusDot,
             { backgroundColor: apiStatus === 'online' ? '#4CAF50' : apiStatus === 'offline' ? '#F44336' : '#FFC107' }
           ]} />
           <Text style={styles.statusText}>
-            {apiStatus === 'online' ? 'සම්බන්ධිතයි (Connected)' : 
-             apiStatus === 'offline' ? 'විසන්ධිතයි (Disconnected)' : 
-             'පරීක්ෂා කරමින්... (Checking...)'}
+            {apiStatus === 'online' ? 'සම්බන්ධිතයි (Connected)' :
+              apiStatus === 'offline' ? 'විසන්ධිතයි (Disconnected)' :
+                'පරීක්ෂා කරමින්... (Checking...)'}
           </Text>
         </View>
         <TouchableOpacity style={styles.testButton} onPress={testConnection}>
@@ -186,7 +186,7 @@ export default function ExploreScreen() {
         <View style={styles.instructionItem}>
           <Text style={styles.instructionNumber}>3.</Text>
           <ThemedText style={styles.instructionText}>
-            "ඉදිරිපත් කරන්න" බොත්තම ඔබන්න
+            &quot;ඉදිරිපත් කරන්න&quot; බොත්තම ඔබන්න
           </ThemedText>
         </View>
         <View style={styles.instructionItem}>
