@@ -33,7 +33,7 @@ export default function DashboardScreen() {
       title: 'Progress',
       icon: 'stats-chart' as const,
       color: '#FF9800',
-      route: '/(tabs)/practice', // Placeholder
+      route: '/(tabs)/progress',
       description: 'View your learning statistics'
     },
     {
@@ -42,6 +42,13 @@ export default function DashboardScreen() {
       color: '#9C27B0',
       route: '/(tabs)/explore', // Placeholder
       description: 'App preferences and account settings'
+    },
+    {
+      title: 'Text to Image',
+      icon: 'image' as const,
+      color: '#E91E63',
+      route: '/(tabs)/text-to-image',
+      description: 'Generate images from Sinhala words'
     }
   ];
 

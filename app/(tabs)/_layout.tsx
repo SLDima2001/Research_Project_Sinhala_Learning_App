@@ -33,6 +33,16 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="features"
+        options={{
+          title: 'Modules',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'grid' : 'grid-outline'} size={24} color={color} />
+          ),
+          tabBarActiveTintColor: '#4CAF50',
+        }}
+      />
+      <Tabs.Screen
         name="components-test"
         options={{
           title: 'Test',
@@ -41,6 +51,27 @@ export default function TabLayout() {
           ),
           tabBarActiveTintColor: '#6366F1',
         }}
+      />
+      {/* Hidden Screens for navigation from features */}
+      <Tabs.Screen
+        name="handwriting"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="storytelling"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="voice-feedback"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="text-to-image"
+        options={{ href: null }}
+      />
+      <Tabs.Screen
+        name="progress"
+        options={{ href: null }}
       />
     </Tabs>
   );
