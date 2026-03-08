@@ -6,10 +6,11 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Image Mapping (In a real app, this might come from the backend or a separate config)
 const storyImages = {
-  'story_dutugemunu': require('../../assets/images/story_cover_dutugemunu.png'), 
-  'story_prince_saliya': require('../../assets/images/story_cover_prince_saliya.png'),
+  'story_dutugemunu': require('../assets/images/story_cover_dutugemunu.png'), 
+  'story_prince_saliya': require('../assets/images/story_cover_prince_saliya.png'),
+  'story_deer': require('../assets/images/story_cover_deer.png'),
   // Default fallback if ID doesn't match
-  'default': require('../../assets/adaptive-icon.png') 
+  'default': require('../assets/adaptive-icon.png') 
 };
 
 export default function DashboardScreen({ navigation }) {

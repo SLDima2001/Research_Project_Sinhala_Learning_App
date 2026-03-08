@@ -3,7 +3,6 @@ import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Alert, Dimensions
 import { Video, ResizeMode } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
-import * as ScreenOrientation from 'expo-screen-orientation';
 import { getStory } from '../services/api';
 // Legacy Components
 import NarrativeScene from '../components/story/NarrativeScene';
@@ -27,19 +26,27 @@ export default function StoryScreen({ route, navigation }) {
     // Video Engine State
     const videoRef = useRef(null);
     const [currentSegmentId, setCurrentSegmentId] = useState('segment_1_intro');
-    const [interactionData, setInteractionData] = useState(null);
+    const [interactionData, setInteractionData] = useState(null); // Used for both choices and questions
     const [playbackStatus, setPlaybackStatus] = useState(null);
-    const [videoSource, setVideoSource] = useState(null); // Local URI state
+    const [videoSource, setVideoSource] = useState(null); 
     const [userHistory, setUserHistory] = useState([]); 
     
+    // NEW: Question State
+    const [activeTimestamps, setActiveTimestamps] = useState([]);
+    const [activeQuestions, setActiveQuestions] = useState([]);
+    const [currentQuestion, setCurrentQuestion] = useState(null);
+    const [correctAnswers, setCorrectAnswers] = useState(0);
+    const [incorrectAnswers, setIncorrectAnswers] = useState(0);
+    const [isQuestionMode, setIsQuestionMode] = useState(false);
+
     // UI State
     const [showScoreModal, setShowScoreModal] = useState(false);
-    const [finalScore, setFinalScore] = useState(0); 
+    const [finalScore, setFinalScore] = useState(0);
 
     useEffect(() => {
         loadStoryData();
         return () => {
-             ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.PORTRAIT_UP);
+             // Screen orientation unlock removed
         };
     }, []);
 
@@ -50,7 +57,7 @@ export default function StoryScreen({ route, navigation }) {
             setStory(data);
             if (data.type === 'video_interactive') {
                try {
-                   await ScreenOrientation.lockAsync(ScreenOrientation.OrientationLock.DEFAULT);
+                   // Screen orientation lock removed
                } catch (error) { console.warn(error); }
                setCurrentSegmentId(Object.keys(data.segments)[0]); 
             } else if (data.scenes && !data.scenes['scene_1_intro']) {
@@ -108,7 +115,41 @@ export default function StoryScreen({ route, navigation }) {
             }
         };
 
+        const setupQuestions = () => {
+            if (!segment) return;
+            const timestamps = segment.question_timestamps || [];
+            const pool = segment.question_pool || [];
+            
+            if (timestamps.length > 0) {
+                const sortedTimestamps = [...timestamps].sort((a,b)=>a-b);
+                const selectedQuestions = [];
+                
+                // For each timestamp, find matching questions, or fallback to random
+                sortedTimestamps.forEach(ts => {
+                    const matchingQuestions = pool.filter(q => q.timestamp === ts);
+                    if (matchingQuestions.length > 0) {
+                        const randomMatch = matchingQuestions[Math.floor(Math.random() * matchingQuestions.length)];
+                        selectedQuestions.push(randomMatch);
+                    } else {
+                        // Fallback logic if no timestamp match
+                        const unselected = pool.filter(q => !selectedQuestions.includes(q));
+                        if(unselected.length > 0) {
+                             selectedQuestions.push(unselected[Math.floor(Math.random() * unselected.length)]);
+                        }
+                    }
+                });
+                
+                setActiveTimestamps(sortedTimestamps);
+                setActiveQuestions(selectedQuestions);
+                console.log(`Prepared ${selectedQuestions.length} timestamp-matched questions for segment ${currentSegmentId}`);
+            } else {
+                setActiveTimestamps([]);
+                setActiveQuestions([]);
+            }
+        };
+
         loadVideo();
+        setupQuestions();
 
     }, [currentSegmentId, story]); // Re-run when segment changes
 
@@ -122,7 +163,7 @@ export default function StoryScreen({ route, navigation }) {
 
         const segment = story.segments[currentSegmentId];
         if (!segment) return; 
-        
+
         // Match end time to finish segment
         if ((status.isPlaying && status.positionMillis >= segment.end_time) || status.didJustFinish) {
             videoRef.current.pauseAsync();
@@ -134,6 +175,26 @@ export default function StoryScreen({ route, navigation }) {
                 handleVideoEnd();
             } else {
                  changeSegment(nextId);
+            }
+            return;
+        }
+
+        // NEW: Check active timestamps
+        if (status.isPlaying && activeTimestamps.length > 0) {
+            const nextTimestamp = activeTimestamps[0];
+            // If we have passed the timestamp
+            if (status.positionMillis >= nextTimestamp) {
+                // Pause the video
+                videoRef.current.pauseAsync();
+                
+                // Show question popup
+                const questionToAsk = activeQuestions[0];
+                setCurrentQuestion(questionToAsk);
+                setIsQuestionMode(true);
+                
+                // Remove this timestamp and question from the pending queues
+                setActiveTimestamps(prev => prev.slice(1));
+                setActiveQuestions(prev => prev.slice(1));
             }
         }
     };
@@ -153,6 +214,28 @@ export default function StoryScreen({ route, navigation }) {
             );
         }
         proceedToNext(option.next_segment_id);
+    };
+
+    const handleQuestionAnswer = (selectedIndex) => {
+        const isCorrect = selectedIndex === currentQuestion.correct_index;
+        
+        if(isCorrect) {
+            setCorrectAnswers(prev => prev + 1);
+            if (Platform.OS === 'android') ToastAndroid.show("Correct!", ToastAndroid.SHORT);
+        } else {
+            setIncorrectAnswers(prev => prev + 1);
+            if (Platform.OS === 'android') ToastAndroid.show("Incorrect", ToastAndroid.SHORT);
+        }
+        
+        setUserHistory(prev => [...prev, {
+            question: currentQuestion.text,
+            isCorrect: isCorrect
+        }]);
+
+        // Cleanup question state and resume
+        setIsQuestionMode(false);
+        setCurrentQuestion(null);
+        videoRef.current.playAsync();
     };
 
     const proceedToNext = async (nextId) => {
@@ -181,6 +264,7 @@ export default function StoryScreen({ route, navigation }) {
         // Clean switch
         setInteractionData(null);
         setPlaybackStatus(null);
+        setIsQuestionMode(false);
         
         setStory(prev => ({...prev, _reloading: true}));
         
@@ -192,11 +276,15 @@ export default function StoryScreen({ route, navigation }) {
     };
 
     const handleVideoEnd = async () => {
-        const score = userHistory.filter(h => h.isCorrect).length;
+        // Includes choice interactions (filter) AND regular question history
+        const points = correctAnswers * 10;
+        
         const resultData = {
             storyId,
             mode: 'video_interactive',
-            points: score * 10,
+            points: points,
+            correct: correctAnswers,
+            incorrect: incorrectAnswers,
             history: userHistory,
             completedAt: new Date().toISOString()
         };
@@ -210,8 +298,21 @@ export default function StoryScreen({ route, navigation }) {
             console.error("Failed to save progress", e);
         }
 
-        setFinalScore(score);
+        setFinalScore(points);
         setShowScoreModal(true);
+    };
+
+    const handleTryAgain = () => {
+        // Reset ALL progress
+        setCorrectAnswers(0);
+        setIncorrectAnswers(0);
+        setUserHistory([]);
+        setFinalScore(0);
+        setShowScoreModal(false);
+        
+        // Reset back to intro segment and reload
+        const firstSegmentId = Object.keys(story.segments)[0];
+        changeSegment(firstSegmentId);
     };
 
     // ==========================================
@@ -265,11 +366,33 @@ export default function StoryScreen({ route, navigation }) {
                     <Text style={styles.debugText}>Src: {videoSource?.uri ? 'Loaded' : 'Pending'}</Text>
                 </View> */}
 
-                {interactionData && (
+                {/* Branch Choice Overlay */}
+                {interactionData && !isQuestionMode && (
                     <InteractionOverlay 
                         interaction={interactionData} 
                         onOptionSelect={handleOptionSelect} 
                     />
+                )}
+
+                {/* Question Mode Overlay */}
+                {isQuestionMode && currentQuestion && (
+                     <View style={[StyleSheet.absoluteFill, styles.questionOverlay]}>
+                         <View style={styles.questionCard}>
+                             <Text style={styles.questionText}>{currentQuestion.text}</Text>
+                             
+                             <View style={styles.optionsContainer}>
+                                {currentQuestion.options.map((optionText, index) => (
+                                    <TouchableOpacity 
+                                        key={index} 
+                                        style={styles.questionOptionBtn}
+                                        onPress={() => handleQuestionAnswer(index)}
+                                    >
+                                        <Text style={styles.questionOptionText}>{optionText}</Text>
+                                    </TouchableOpacity>
+                                ))}
+                             </View>
+                         </View>
+                     </View>
                 )}
 
                 {/* 3. FINAL SCORE MODAL */}
@@ -284,20 +407,37 @@ export default function StoryScreen({ route, navigation }) {
                             <Text style={styles.modalTitle}>Congratulations!</Text>
                             <Text style={styles.modalSubtitle}>You finished the story!</Text>
                             
+                            <View style={styles.scoreDetailsRow}>
+                                <View style={styles.scoreBox}>
+                                    <Text style={styles.scoreLabel}>Correct</Text>
+                                    <Text style={[styles.scoreValue, {color: 'green'}]}>{correctAnswers}</Text>
+                                </View>
+                                <View style={styles.scoreBox}>
+                                    <Text style={styles.scoreLabel}>Incorrect</Text>
+                                    <Text style={[styles.scoreValue, {color: 'red'}]}>{incorrectAnswers}</Text>
+                                </View>
+                            </View>
+
                             <View style={styles.scoreContainer}>
                                 <Text style={styles.scoreLabel}>Final Score</Text>
                                 <Text style={styles.scoreValue}>{finalScore}</Text>
                             </View>
 
-                            <TouchableOpacity 
-                                style={styles.finishButton}
-                                onPress={() => {
-                                    setShowScoreModal(false);
-                                    navigation.goBack();
-                                }}
-                            >
-                                <Text style={styles.finishButtonText}>Finish Story</Text>
-                            </TouchableOpacity>
+                            <View style={styles.buttonRow}>
+                                <TouchableOpacity style={styles.tryAgainButton} onPress={handleTryAgain}>
+                                    <Text style={styles.tryAgainButtonText}>Try Again</Text>
+                                </TouchableOpacity>
+
+                                <TouchableOpacity 
+                                    style={styles.finishButton}
+                                    onPress={() => {
+                                        setShowScoreModal(false);
+                                        navigation.goBack();
+                                    }}
+                                >
+                                    <Text style={styles.finishButtonText}>Done</Text>
+                                </TouchableOpacity>
+                            </View>
                         </View>
                     </View>
                 </Modal>
@@ -364,14 +504,26 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.5)', padding: 5, borderRadius: 5
     },
     debugText: { color: 'white', fontSize: 10 },
+    // Question Overlay Styles
+    questionOverlay: { backgroundColor: 'rgba(0,0,0,0.7)', justifyContent: 'center', alignItems: 'center', zIndex: 10 },
+    questionCard: { width: '85%', backgroundColor: 'white', borderRadius: 20, padding: 30, elevation: 10, alignItems: 'center'},
+    questionText: { fontSize: 22, fontWeight: 'bold', color: '#333', textAlign: 'center', marginBottom: 25 },
+    optionsContainer: { width: '100%' },
+    questionOptionBtn: { backgroundColor: '#f0f0f0', padding: 15, borderRadius: 10, marginBottom: 15, borderWidth: 1, borderColor: '#ddd', alignItems: 'center' },
+    questionOptionText: { fontSize: 18, color: '#444', fontWeight: '500' },
     // Modal Styles
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center' },
     modalCard: { width: '80%', backgroundColor: 'white', borderRadius: 20, padding: 30, alignItems: 'center', elevation: 5 },
     modalTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#333' },
     modalSubtitle: { fontSize: 16, color: '#666', marginBottom: 20 },
-    scoreContainer: { marginBottom: 30, alignItems: 'center' },
-    scoreLabel: { fontSize: 14, textTransform: 'uppercase', color: '#888', letterSpacing: 1 },
+    scoreDetailsRow: { flexDirection: 'row', justifyContent: 'space-around', width: '100%', marginBottom: 20 },
+    scoreBox: { alignItems: 'center' },
+    scoreContainer: { marginBottom: 30, alignItems: 'center', backgroundColor: '#FFF3E0', padding: 15, borderRadius: 15, width: '80%' },
+    scoreLabel: { fontSize: 14, textTransform: 'uppercase', color: '#888', letterSpacing: 1, marginBottom: 5 },
     scoreValue: { fontSize: 48, fontWeight: 'bold', color: '#FFA500' },
-    finishButton: { backgroundColor: '#FFA500', paddingVertical: 12, paddingHorizontal: 40, borderRadius: 25 },
-    finishButtonText: { color: 'white', fontSize: 18, fontWeight: 'bold' }
+    buttonRow: { flexDirection: 'row', justifyContent: 'space-between', width: '100%' },
+    tryAgainButton: { backgroundColor: '#ddd', paddingVertical: 12, flex: 1, marginRight: 10, borderRadius: 25, alignItems: 'center' },
+    tryAgainButtonText: { color: '#333', fontSize: 16, fontWeight: 'bold' },
+    finishButton: { backgroundColor: '#FFA500', paddingVertical: 12, flex: 1, marginLeft: 10, borderRadius: 25, alignItems: 'center' },
+    finishButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' }
 });

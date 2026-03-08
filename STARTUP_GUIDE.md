@@ -1,28 +1,28 @@
 # Complete App Startup Guide
 
 ## Prerequisites
-- Backend running on `http://localhost:5000`
-- Android emulator (Pixel 9) running
+- Android emulator running (e.g. Pixel 6 or Pixel 9)
 - Node.js and npm installed
+- Python installed
 
 ## Step 1: Start Backend
+Open a terminal and run the backend server first:
 
 ```bash
-cd sinhala_app_backend/api
-start_backend.bat/python app.py
+cd Research_Project_Sinhala_Learning_App-Backend
+python -m uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
 
-Wait for:
-```
-INFO - Loaded 1159 sentences from metadata.csv
-INFO - Server will be accessible at http://0.0.0.0:5002
-```
+Wait until you see:
+`INFO: Uvicorn running on http://0.0.0.0:8000 (Press CTRL+C to quit)`
 
 ## Step 2: Start Frontend
+Open a **new terminal** and run the React Native Expo app:
 
 ```bash
-cd sinhala_app
-npx expo start
+cd Research_Project_Sinhala_Learning_App
+npx expo start --clear --android
+```
 ```
 
 Press `a` to open on Android emulator.
