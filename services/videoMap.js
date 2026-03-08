@@ -16,6 +16,7 @@ const videoMap = {
     "deer_intro.mp4": require('../assets/videos/deer intro.mp4'),
     "deer_A.mp4": require('../assets/videos/deer A.mp4'),
     "deer_B.mp4": require('../assets/videos/deer B.mp4'),
+    "Andare.mp4": require('../assets/videos/Andare.mp4'),
 };
 
 export const getVideoSource = (videoName) => {

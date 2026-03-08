@@ -38,6 +38,7 @@ export default function StoryScreen({ route, navigation }) {
     const [correctAnswers, setCorrectAnswers] = useState(0);
     const [incorrectAnswers, setIncorrectAnswers] = useState(0);
     const [isQuestionMode, setIsQuestionMode] = useState(false);
+    const [questionAttempts, setQuestionAttempts] = useState(0);
 
     // UI State
     const [showScoreModal, setShowScoreModal] = useState(false);
@@ -190,6 +191,7 @@ export default function StoryScreen({ route, navigation }) {
                 // Show question popup
                 const questionToAsk = activeQuestions[0];
                 setCurrentQuestion(questionToAsk);
+                setQuestionAttempts(0);
                 setIsQuestionMode(true);
                 
                 // Remove this timestamp and question from the pending queues
@@ -220,22 +222,29 @@ export default function StoryScreen({ route, navigation }) {
         const isCorrect = selectedIndex === currentQuestion.correct_index;
         
         if(isCorrect) {
-            setCorrectAnswers(prev => prev + 1);
+            // Only reward points if answered correctly on the FIRST try
+            if (questionAttempts === 0) {
+                setCorrectAnswers(prev => prev + 1);
+            }
             if (Platform.OS === 'android') ToastAndroid.show("Correct!", ToastAndroid.SHORT);
-        } else {
-            setIncorrectAnswers(prev => prev + 1);
-            if (Platform.OS === 'android') ToastAndroid.show("Incorrect", ToastAndroid.SHORT);
-        }
-        
-        setUserHistory(prev => [...prev, {
-            question: currentQuestion.text,
-            isCorrect: isCorrect
-        }]);
+            
+            setUserHistory(prev => [...prev, {
+                question: currentQuestion.text,
+                isCorrect: questionAttempts === 0, // Recorded correct only if first try
+                attempts: questionAttempts + 1
+            }]);
 
-        // Cleanup question state and resume
-        setIsQuestionMode(false);
-        setCurrentQuestion(null);
-        videoRef.current.playAsync();
+            // Cleanup question state and resume
+            setIsQuestionMode(false);
+            setCurrentQuestion(null);
+            setQuestionAttempts(0);
+            videoRef.current.playAsync();
+        } else {
+            // Track incorrect attempt but do NOT resume video
+            setQuestionAttempts(prev => prev + 1);
+            setIncorrectAnswers(prev => prev + 1);
+            if (Platform.OS === 'android') ToastAndroid.show("Incorrect, Try Again!", ToastAndroid.SHORT);
+        }
     };
 
     const proceedToNext = async (nextId) => {

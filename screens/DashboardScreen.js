@@ -6,11 +6,12 @@ import { Ionicons } from '@expo/vector-icons';
 
 // Image Mapping (In a real app, this might come from the backend or a separate config)
 const storyImages = {
-  'story_dutugemunu': require('../assets/images/story_cover_dutugemunu.png'), 
+  'story_dutugemunu': require('../assets/images/story_cover_dutugemunu.png'),
   'story_prince_saliya': require('../assets/images/story_cover_prince_saliya.png'),
   'story_deer': require('../assets/images/story_cover_deer.png'),
+  'story_andare': require('../assets/images/story_cover_andare.png'),
   // Default fallback if ID doesn't match
-  'default': require('../assets/adaptive-icon.png') 
+  'default': require('../assets/adaptive-icon.png')
 };
 
 export default function DashboardScreen({ navigation }) {
@@ -29,11 +30,11 @@ export default function DashboardScreen({ navigation }) {
   };
 
   const getStoryImage = (id) => {
-      return storyImages[id] || storyImages['default'];
+    return storyImages[id] || storyImages['default'];
   };
 
   const renderItem = ({ item }) => (
-    <TouchableOpacity 
+    <TouchableOpacity
       activeOpacity={0.9}
       style={styles.cardContainer}
       onPress={() => navigation.navigate('Story', { storyId: item.id, title: item.title })}
@@ -49,12 +50,12 @@ export default function DashboardScreen({ navigation }) {
         >
           <View style={styles.cardContent}>
             <View style={styles.textContainer}>
-                <Text style={styles.categoryTag}>INTERACTIVE STORY</Text>
-                <Text style={styles.title}>{item.title}</Text>
-                <Text style={styles.subtitle}>Tap to start your adventure</Text>
+              <Text style={styles.categoryTag}>INTERACTIVE STORY</Text>
+              <Text style={styles.title}>{item.title}</Text>
+              <Text style={styles.subtitle}>Tap to start your adventure</Text>
             </View>
             <View style={styles.playButton}>
-                <Ionicons name="play" size={24} color="white" style={{ marginLeft: 4 }} />
+              <Ionicons name="play" size={24} color="white" style={{ marginLeft: 4 }} />
             </View>
           </View>
         </LinearGradient>
@@ -116,7 +117,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 6,
-    backgroundColor: 'white', 
+    backgroundColor: 'white',
   },
   bgImage: {
     flex: 1,
@@ -150,7 +151,7 @@ const styles = StyleSheet.create({
     color: 'white',
     marginBottom: 4,
     textShadowColor: 'rgba(0, 0, 0, 0.75)',
-    textShadowOffset: {width: 0, height: 1},
+    textShadowOffset: { width: 0, height: 1 },
     textShadowRadius: 3,
   },
   subtitle: {
