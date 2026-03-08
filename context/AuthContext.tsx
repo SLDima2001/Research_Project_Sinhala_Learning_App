@@ -4,7 +4,7 @@ import axios from 'axios';
 
 // API Base URL - Update this to your backend URL
 // Use your computer's IP address (not localhost) when testing on physical device/emulator
-const API_URL = 'http://192.168.1.108:5000/api/auth';
+const API_URL = 'http://192.168.1.108:5002/api/auth';
 
 interface User {
     id: string;

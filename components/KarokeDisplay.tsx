@@ -1,7 +1,7 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Animated } from 'react-native';
 import { PronunciationStatus } from '../hooks/usePronunciationFeedback';
-import Colors from '../constants/Colors';
+import { Colors } from '../constants/Colors';
 
 export interface KaraokeWord {
     text: string;

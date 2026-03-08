@@ -45,7 +45,7 @@ function RootLayoutNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="auth" options={{ headerShown: false }} />
         <Stack.Screen name="index" options={{ title: 'සිංහල පන්තිය' }} />
-        <Stack.Screen name="practice" options={{ title: 'Practice' }} />
+        <Stack.Screen name="voice-practice" options={{ title: 'Practice', headerShown: false }} />
         <Stack.Screen name="results" options={{ title: 'Results' }} />
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>

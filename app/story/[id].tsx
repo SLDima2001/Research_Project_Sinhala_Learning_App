@@ -326,7 +326,10 @@ export default function StoryScreen() {
     const sceneType = scene.type || 'narrative';
 
     const handleLegacyNext = (nextId: string) => {
-        if (!nextId) { Alert.alert("End", "Finished!", [{ text: "Back", onPress: () => router.back() }]); return; }
+        if (!nextId) {
+            handleVideoEnd();
+            return;
+        }
         setCurrentSceneId(nextId);
     };
 

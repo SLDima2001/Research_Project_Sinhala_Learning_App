@@ -57,6 +57,19 @@ export const Config = {
         MAX_CACHE_SIZE: 100 * 1024 * 1024, // 100MB
     },
 
+    // Audio fallback settings
+    AUDIO_FALLBACK: {
+        USE_TEXT_TO_SPEECH: true, // Use expo-speech when audio files unavailable
+        TTS_LANGUAGE: 'si-LK', // Sinhala language code
+    },
+
+    // Network settings
+    NETWORK: {
+        CONNECT_TIMEOUT: 5000, // 5 seconds
+        REQUEST_TIMEOUT: 10000, // 10 seconds
+        RETRY_ATTEMPTS: 2,
+    },
+
     // App settings
     APP: {
         POINTS_PER_CORRECT_WORD: 10,

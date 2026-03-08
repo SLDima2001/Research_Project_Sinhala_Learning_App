@@ -49,10 +49,9 @@ export default function PracticeScreen() {
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [wordTimings, setWordTimings] = useState<WordTiming[]>([]);
 
-    // Generate audio URL from backend
-    const audioUri = currentSentence?.hasAudio && currentSentence?.audioPath
-        ? `${Config.API_BASE_URL}${currentSentence.audioPath}`
-        : null;
+    // Audio files are not available on the unified backend, so force audioUri to null
+    // This ensures the frontend immediately defaults to the built-in TTS fallback
+    const audioUri = null;
 
     // Initialize karaoke words when sentence changes
     useEffect(() => {
@@ -111,15 +110,6 @@ export default function PracticeScreen() {
 
     // Handle play button
     const handlePlay = useCallback(async () => {
-        if (!audioUri) {
-            Alert.alert(
-                'Audio Unavailable',
-                isOnline
-                    ? 'This sentence does not have audio available.'
-                    : 'Audio playback requires internet connection.'
-            );
-            return;
-        }
 
         // If recording, stop recording first
         if (audioRecorder.isRecording) {
@@ -311,15 +301,15 @@ export default function PracticeScreen() {
                 {/* Control Buttons */}
                 <View style={styles.controlsContainer}>
                     <TouchableOpacity
-                        style={[styles.controlButton, (!audioUri || mode !== 'idle') && styles.controlButtonDisabled]}
+                        style={[styles.controlButton, (mode !== 'idle') && styles.controlButtonDisabled]}
                         onPress={handlePlay}
-                        disabled={!audioUri || mode !== 'idle'}
+                        disabled={mode !== 'idle'}
                     >
                         {/* Circle Button Container */}
-                        <View style={[styles.circleButton, { borderColor: '#58CC02', borderWidth: 2 }]}>
-                            <Ionicons name="play" size={40} color={'#58CC02'} />
+                        <View style={[styles.circleButton, { borderColor: '#1EBF54', borderWidth: 2 }]}>
+                            <Ionicons name="play" size={40} color={'#1EBF54'} />
                         </View>
-                        <Text style={[styles.controlButtonText, (!audioUri || mode !== 'idle') && styles.controlButtonTextDisabled]}>
+                        <Text style={[styles.controlButtonText, (mode !== 'idle') && styles.controlButtonTextDisabled]}>
                             Listen
                         </Text>
                     </TouchableOpacity>
@@ -340,7 +330,7 @@ export default function PracticeScreen() {
                         onPress={handlePreviousSentence}
                         disabled={currentIndex === 0}
                     >
-                        <Ionicons name="chevron-back" size={24} color={currentIndex === 0 ? Colors.textSecondary : '#58CC02'} />
+                        <Ionicons name="chevron-back" size={24} color={currentIndex === 0 ? Colors.textSecondary : '#1EBF54'} />
                         <Text style={[styles.navButtonText, currentIndex === 0 && styles.navButtonTextDisabled]}>
                             Previous
                         </Text>
@@ -354,7 +344,7 @@ export default function PracticeScreen() {
                         <Text style={[styles.navButtonText, currentIndex === sentences.length - 1 && styles.navButtonTextDisabled]}>
                             Next
                         </Text>
-                        <Ionicons name="chevron-forward" size={24} color={currentIndex === sentences.length - 1 ? Colors.textSecondary : '#58CC02'} />
+                        <Ionicons name="chevron-forward" size={24} color={currentIndex === sentences.length - 1 ? Colors.textSecondary : '#1EBF54'} />
                     </TouchableOpacity>
                 </View>
 
@@ -531,7 +521,7 @@ const styles = StyleSheet.create({
     },
     navButtonText: {
         fontSize: 16,
-        color: '#58CC02', // Green text
+        color: '#1EBF54', // Green text
         fontWeight: '600',
         marginHorizontal: 4,
     },

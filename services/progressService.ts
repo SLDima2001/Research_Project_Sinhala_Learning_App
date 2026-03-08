@@ -91,22 +91,45 @@ export function getCurrentStreak(records: ScoreRecord[]): number {
  * Generate an AI-style insight based on progress records.
  */
 export function generateInsight(records: ScoreRecord[]): string {
-    if (records.length === 0) return "🚀 Start playing to see your progress!";
+    if (records.length === 0) return "🚀 Start playing to see your progress! Your journey to mastering Sinhala starts here.";
 
+    const moduleKeys: GameModule[] = ['text_to_image', 'storytelling', 'handwriting', 'voice_feedback'];
+    const summaries = moduleKeys.map(k => ({ key: k, ...summarizeModule(records, k) }));
+
+    // Find the module with the lowest average score (if practiced)
+    const practiced = summaries.filter(s => s.count > 0);
+    const weakest = [...practiced].sort((a, b) => a.avg - b.avg)[0];
+    const strongest = [...practiced].sort((a, b) => b.avg - a.avg)[0];
+
+    // Predict progress based on recent trend
     const recent = records.slice(-10);
-    const recentAvg = recent.reduce((s, r) => s + (r.score / Math.max(r.maxScore, 1)), 0) / recent.length;
+    const recentAvg = recent.reduce((s, r) => s + (r.score / Math.max(r.maxScore, 1)), 0) / Math.max(recent.length, 1);
 
-    const storySummary = summarizeModule(records, 'storytelling');
-    const tiSummary = summarizeModule(records, 'text_to_image');
-
-    if (recentAvg >= 0.8) return "🌟 Excellent work! You're mastering Sinhala! Keep it up!";
-    if (recentAvg >= 0.6) return "📈 You're improving steadily. Practice a bit more every day!";
-
-    if (storySummary.count > tiSummary.count) {
-        return "📖 You love stories! Try the Text-to-Image game to balance your skills.";
-    } else if (tiSummary.count > 0) {
-        return "🎨 You're exploring images! Try the story module to boost vocabulary.";
+    let prediction = "";
+    if (recentAvg >= 0.8) {
+        prediction = "🌟 You're on track to becoming a Sinhala expert! ";
+    } else if (recentAvg >= 0.5) {
+        prediction = "📈 You're showing steady improvement. ";
+    } else {
+        prediction = "💪 You're building your foundation. ";
     }
 
-    return "💪 Keep practicing — consistency is the key to fluency!";
+    // Specific improvement advice
+    if (weakest && weakest.avg < 70) {
+        const moduleName = weakest.key.replace(/_/g, ' ');
+        return `${prediction}To improve faster, try focusing more on ${moduleName} practice. Your average there is ${weakest.avg}%.`;
+    }
+
+    if (practiced.length < 4) {
+        const unpracticed = moduleKeys.find(k => !records.some(r => r.module === k));
+        if (unpracticed) {
+            return `${prediction}Great job so far! Try exploring the ${unpracticed.replace(/_/g, ' ')} module to become more well-rounded.`;
+        }
+    }
+
+    if (strongest && strongest.avg > 90) {
+        return `${prediction}You're doing amazing in ${strongest.key.replace(/_/g, ' ')}! Keep up the great work and keep challenging yourself!`;
+    }
+
+    return `${prediction}Consistency is key. Practicing 15 minutes every day will lead to amazing results!`;
 }

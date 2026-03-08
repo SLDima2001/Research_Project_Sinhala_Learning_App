@@ -11,12 +11,14 @@ import {
     ScrollView,
 } from 'react-native';
 import DrawingCanvas, { DrawingCanvasRef } from '@/components/DrawingCanvas';
+import { useAuth } from '@/context/AuthContext';
+import { saveGameScore } from '@/services/progressService';
 
 const { width } = Dimensions.get('window');
 const CANVAS_SIZE = width - 40;
 
 // ⚠️ IMPORTANT: Replace with your computer's IP address
-const API_URL = 'http://192.168.1.108:5000/api';
+const API_URL = 'http://192.168.1.108:5002/api';
 
 interface Letter {
     id: number;
@@ -33,6 +35,7 @@ interface Result {
 }
 
 export default function PracticeScreen() {
+    const { user } = useAuth();
     const [currentLetter, setCurrentLetter] = useState<Letter | null>(null);
     const [sessionId, setSessionId] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -126,6 +129,23 @@ export default function PracticeScreen() {
 
             if (data.success) {
                 setResult(data);
+
+                // Save score to progress service
+                if (user?.id) {
+                    saveGameScore(user.id, {
+                        module: 'handwriting',
+                        score: Math.round(data.score),
+                        maxScore: 100,
+                        correct: data.is_correct ? 1 : 0,
+                        total: 1,
+                        metadata: {
+                            letter: currentLetter?.character,
+                            romanized: currentLetter?.romanized,
+                            confidence: data.confidence
+                        },
+                        completedAt: new Date().toISOString(),
+                    }).catch(err => console.error('Failed to save handwriting score:', err));
+                }
 
                 const scoreEmoji = data.score >= 90 ? '🌟' : data.score >= 75 ? '👍' : '💪';
                 Alert.alert(

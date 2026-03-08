@@ -31,7 +31,7 @@ const SINHALA_WORDS = [
 // - Mac/Linux: Open Terminal and type 'ifconfig', look for inet
 // Example: const API_URL = 'http://192.168.1.100:5001';
 const API_IP = '192.168.1.108'; // Matches practice.tsx IP
-const API_URL = Platform.OS === 'android' && !API_IP.startsWith('192') ? 'http://10.0.2.2:5000' : `http://${API_IP}:5000`;
+const API_URL = Platform.OS === 'android' && !API_IP.startsWith('192') ? 'http://10.0.2.2:5002' : `http://${API_IP}:5002`;
 
 export default function HomeScreen() {
   const { user } = useAuth();
@@ -210,12 +210,17 @@ export default function HomeScreen() {
 
     try {
       console.log('Regenerating for:', detectedText);
+      // Explicitly set randomize: true for shuffle
       const response = await fetch(`${API_URL}/api/ti/generate-image`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ prompt: detectedText, randomize: true }),
+        body: JSON.stringify({
+          prompt: detectedText,
+          randomize: true,
+          deepSearch: true // Signal to backend we want broad results
+        }),
       });
 
       if (!response.ok) throw new Error('Generation failed');
@@ -310,7 +315,7 @@ export default function HomeScreen() {
     setConfidence(0);
     setSessionCorrect(0);
     setSessionTotal(0);
-    setStep('manual_input');
+    setStep('capture');
   };
 
   if (showCamera) {
@@ -424,6 +429,12 @@ export default function HomeScreen() {
                 onPress={regenerateImage}
               >
                 <ThemedText style={styles.buttonText}>Generate 🎨</ThemedText>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.primaryButton, { flex: 1, backgroundColor: '#64748b' }]}
+                onPress={() => setStep('capture')}
+              >
+                <ThemedText style={styles.buttonText}>Back ↩️</ThemedText>
               </TouchableOpacity>
             </View>
           </ThemedView>
@@ -549,7 +560,16 @@ export default function HomeScreen() {
 
         {(generatedImage) && !loading && step !== 'game' && (
           <View style={{ gap: 15, marginTop: 20 }}>
-            <TouchableOpacity style={styles.gameActionButton} onPress={startMiniGame}>
+            <TouchableOpacity style={styles.gameActionButton} onPress={regenerateImage}>
+              <ThemedText style={styles.buttonText}>
+                🔀 වෙනත් රූපයක් පෙන්වන්න
+              </ThemedText>
+              <ThemedText style={styles.buttonSubtext}>
+                Show Different Image
+              </ThemedText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.gameActionButton, { backgroundColor: '#8b5cf6' }]} onPress={startMiniGame}>
               <ThemedText style={styles.buttonText}>
                 🎮 කුඩා ක්‍රීඩාවක් කරමු
               </ThemedText>

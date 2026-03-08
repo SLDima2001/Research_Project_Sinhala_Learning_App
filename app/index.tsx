@@ -102,10 +102,7 @@ export default function HomeScreen() {
     };
 
     const handleSentencePress = (sentence: Sentence) => {
-        router.push({
-            pathname: '/practice',
-            params: { sentenceId: sentence.id },
-        });
+        router.push(`/voice-practice?sentenceId=${sentence.id}` as any);
     };
 
     // Scroll to bottom when category is selected and sentences loaded
@@ -165,7 +162,7 @@ export default function HomeScreen() {
                     <Ionicons
                         name={getCategoryIcon(cat) as any}
                         size={32}
-                        color={cat === 'offline' ? Colors.success : Colors.primary}
+                        color={Colors.success}
                         style={{ marginBottom: 8 }}
                     />
                     <Text style={styles.categoryButtonText}>
@@ -241,8 +238,7 @@ export default function HomeScreen() {
 
         return (
             <View style={{ height: containerHeight, position: 'relative' }}>
-                {/* Winding Path Layer */}
-                {/* Path Removed */}
+
 
                 {/* Buttons Layer */}
                 {sentences.map((sentence, index) => {
@@ -284,10 +280,10 @@ export default function HomeScreen() {
                         <TouchableOpacity
                             onPress={handleBackToCategories}
                             style={{
-                                backgroundColor: '#FFF',
+                                backgroundColor: '#FFFFFF',
                                 borderRadius: 30,
                                 padding: 8,
-                                shadowColor: "#000000",
+                                shadowColor: "#000",
                                 shadowOffset: {
                                     width: 0,
                                     height: 2,

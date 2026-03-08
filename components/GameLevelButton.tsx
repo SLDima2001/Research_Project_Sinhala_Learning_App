@@ -11,6 +11,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
+import { BlurView } from 'expo-blur';
 
 interface GameLevelButtonProps {
     level: number;
@@ -74,14 +75,13 @@ export const GameLevelButton: React.FC<GameLevelButtonProps> = ({
     const isLocked = status === 'locked';
 
     // Transparent Green Jelly Colors
-    // Top gradient: Lighter, transparent
-    // Bottom gradient: Darker, more opaque but still see-through
+    // Glassmorphism: Much more transparent to let BlurView do the work
     const jellyColors = isLocked
-        ? ['#D1D5DB', '#9CA3AF'] // Grey for locked
-        : ['rgba(132, 255, 99, 0.8)', 'rgba(64, 189, 2, 0.85)']; // Green transparent!
+        ? ['rgba(209, 213, 219, 0.3)', 'rgba(156, 163, 175, 0.4)'] // Transparent Grey
+        : ['#1EBF54', '#169940']; // Requested Green to Darker Green
 
     // Border color
-    const borderColor = isLocked ? '#6B7280' : 'rgba(56, 160, 0, 0.6)';
+    const borderColor = isLocked ? 'rgba(107, 114, 128, 0.5)' : '#148F3E';
 
     return (
         <Animated.View style={[styles.container, style, animatedStyle]}>
@@ -92,12 +92,24 @@ export const GameLevelButton: React.FC<GameLevelButtonProps> = ({
                 style={[styles.buttonWrapper]}
             >
                 {/* Main Jelly Body */}
-                <LinearGradient
-                    colors={jellyColors as any}
-                    style={[styles.jellyBody, { borderColor: borderColor }]}
-                    start={{ x: 0.3, y: 0 }}
-                    end={{ x: 0.8, y: 1 }}
+                <View
+                    style={[styles.jellyBody, { borderColor: borderColor, overflow: 'hidden', backgroundColor: 'transparent' }]}
                 >
+                    {/* Glass Blur Effect */}
+                    <BlurView
+                        intensity={40}
+                        tint="light"
+                        style={StyleSheet.absoluteFill}
+                    />
+
+                    {/* Color Tint Overlay */}
+                    <LinearGradient
+                        colors={jellyColors as any}
+                        style={StyleSheet.absoluteFill}
+                        start={{ x: 0.3, y: 0 }}
+                        end={{ x: 0.8, y: 1 }}
+                    />
+
                     {/* Inner Refraction/Highlight (The "Jelly" Shine) */}
                     <View style={styles.highlightContainer}>
                         <View style={styles.shineWait} />
@@ -110,7 +122,7 @@ export const GameLevelButton: React.FC<GameLevelButtonProps> = ({
                     ) : (
                         <Text style={styles.levelText}>{level}</Text>
                     )}
-                </LinearGradient>
+                </View>
 
                 {/* Shadow (Separate to not scale with squish weirdly, or maybe it should?) 
                     Actually putting shadow on the wrapper or separate view below is better for 'floating' jelly

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { TouchableOpacity, Text, StyleSheet, Animated } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, Animated, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../constants/Colors';
 
@@ -72,7 +72,7 @@ export const RecordingButton: React.FC<RecordingButtonProps> = ({
                         backgroundColor: '#FFFFFF',
                         transform: [{ scale: pulseAnim }],
                         opacity: isDisabled ? 0.5 : opacityAnim,
-                        borderColor: isRecording ? Colors.error : '#58CC02', // Green border or Red when recording
+                        borderColor: isRecording ? Colors.error : '#1EBF54', // Green border or Red when recording
                         borderWidth: 2,
                     },
                 ]}
@@ -80,7 +80,7 @@ export const RecordingButton: React.FC<RecordingButtonProps> = ({
                 <Ionicons
                     name={isRecording ? "mic" : "mic-outline"}
                     size={40}
-                    color={isRecording ? Colors.error : '#58CC02'} // Green icon
+                    color={isRecording ? Colors.error : '#1EBF54'} // Green icon
                 />
             </Animated.View>
             <Text style={styles.label}>

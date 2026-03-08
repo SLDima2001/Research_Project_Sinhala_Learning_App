@@ -11,7 +11,7 @@ import {
 import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
 
-const API_URL = 'http://192.168.1.108:5000/api';
+const API_URL = 'http://192.168.1.108:5002/api';
 
 interface LetterInfo {
   id: number;
