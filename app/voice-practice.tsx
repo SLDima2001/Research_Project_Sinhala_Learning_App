@@ -49,9 +49,8 @@ export default function PracticeScreen() {
     const [isCorrect, setIsCorrect] = useState<boolean | null>(null);
     const [wordTimings, setWordTimings] = useState<WordTiming[]>([]);
 
-    // Audio files are not available on the unified backend, so force audioUri to null
-    // This ensures the frontend immediately defaults to the built-in TTS fallback
-    const audioUri = null;
+    // Use backend audio if available, otherwise fallback to TTS
+    const audioUri = currentSentence?.audioPath ? `${Config.API_BASE_URL}${currentSentence.audioPath}` : null;
 
     // Initialize karaoke words when sentence changes
     useEffect(() => {
