@@ -2,28 +2,10 @@ import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 import * as Device from 'expo-device';
 
-// Helper to determine the correct backend URL
 const getBackendUrl = () => {
     const PORT = 5002;
-
-    // Android Emulator special loopback IP
-    if (Platform.OS === 'android' && !Device.isDevice) {
-        return `http://10.0.2.2:${PORT}`;
-    }
-
-    // iOS Simulator uses standard localhost
-    if (Platform.OS === 'ios' && !Device.isDevice) {
-        return `http://localhost:${PORT}`;
-    }
-
-    // For physical devices, rely on Expo's host URI (LAN IP)
-    if (Constants.expoConfig?.hostUri) {
-        const ip = Constants.expoConfig.hostUri.split(':')[0];
-        return `http://${ip}:${PORT}`;
-    }
-
-    // Fallback to the hardcoded LAN IP if automatic detection fails
-    return 'http://10.98.174.160:5002';
+    // Hardcoded to current LAN IP for reliable connection
+    return `http://172.28.28.40:${PORT}`;
 };
 
 const BASE_URL = getBackendUrl();

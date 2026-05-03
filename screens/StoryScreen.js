@@ -4,6 +4,7 @@ import { Video, ResizeMode } from 'expo-av';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Asset } from 'expo-asset';
 import { getStory } from '../services/api';
+import { getVideosByDifficulty } from '../services/videoMap';
 // Legacy Components
 import NarrativeScene from '../components/story/NarrativeScene';
 import DecisionScene from '../components/story/DecisionScene';
@@ -12,8 +13,15 @@ import QuizScene from '../components/story/QuizScene';
 // New Video Components
 import InteractionOverlay from '../components/story/InteractionOverlay';
 
+// Difficulty labels for display
+const DIFFICULTY_LABELS = {
+    easy:   { label: 'Easy',   emoji: '🌱', color: '#4CAF50' },
+    medium: { label: 'Medium', emoji: '⭐', color: '#FF9800' },
+    hard:   { label: 'Hard',   emoji: '🔥', color: '#F44336' },
+};
+
 export default function StoryScreen({ route, navigation }) {
-    const { storyId } = route.params;
+    const { storyId, difficulty } = route.params;
     const { width, height } = useWindowDimensions();
     const isLandscape = width > height;
 
@@ -52,18 +60,34 @@ export default function StoryScreen({ route, navigation }) {
     }, []);
 
     const loadStoryData = async () => {
-        const data = await getStory(storyId);
+        let data = await getStory(storyId);
         if (data) {
-            console.log("RECEIVED STORY DATA:", JSON.stringify(data, null, 2)); 
-            setStory(data);
-            if (data.type === 'video_interactive') {
-               try {
-                   // Screen orientation lock removed
-               } catch (error) { console.warn(error); }
-               setCurrentSegmentId(Object.keys(data.segments)[0]); 
+            console.log("RECEIVED STORY DATA:", JSON.stringify(data, null, 2));
+
+            if (data.type === 'video_interactive' && data.segments) {
+                // Filter segments by difficulty
+                const allowedVideoIds = getVideosByDifficulty(storyId, difficulty);
+                if (allowedVideoIds && allowedVideoIds.length > 0) {
+                    const filteredSegments = {};
+                    Object.entries(data.segments).forEach(([segId, seg]) => {
+                        if (allowedVideoIds.includes(seg.video_id)) {
+                            filteredSegments[segId] = seg;
+                        }
+                    });
+                    // If we filtered down to some segments, use them; otherwise keep all
+                    if (Object.keys(filteredSegments).length > 0) {
+                        data = { ...data, segments: filteredSegments };
+                    }
+                }
+                try {
+                    // Screen orientation lock removed
+                } catch (error) { console.warn(error); }
+                setCurrentSegmentId(Object.keys(data.segments)[0]);
             } else if (data.scenes && !data.scenes['scene_1_intro']) {
-               setCurrentSceneId(Object.keys(data.scenes)[0]);
+                setCurrentSceneId(Object.keys(data.scenes)[0]);
             }
+
+            setStory(data);
         }
         setLoading(false);
     };
@@ -413,6 +437,14 @@ export default function StoryScreen({ route, navigation }) {
                 >
                     <View style={styles.modalOverlay}>
                         <View style={styles.modalCard}>
+                            {/* Difficulty badge */}
+                            {difficulty && DIFFICULTY_LABELS[difficulty] && (
+                                <View style={[styles.difficultyBadge, { backgroundColor: DIFFICULTY_LABELS[difficulty].color }]}>
+                                    <Text style={styles.difficultyBadgeText}>
+                                        {DIFFICULTY_LABELS[difficulty].emoji} {DIFFICULTY_LABELS[difficulty].label.toUpperCase()}
+                                    </Text>
+                                </View>
+                            )}
                             <Text style={styles.modalTitle}>Congratulations!</Text>
                             <Text style={styles.modalSubtitle}>You finished the story!</Text>
                             
@@ -534,5 +566,7 @@ const styles = StyleSheet.create({
     tryAgainButton: { backgroundColor: '#ddd', paddingVertical: 12, flex: 1, marginRight: 10, borderRadius: 25, alignItems: 'center' },
     tryAgainButtonText: { color: '#333', fontSize: 16, fontWeight: 'bold' },
     finishButton: { backgroundColor: '#FFA500', paddingVertical: 12, flex: 1, marginLeft: 10, borderRadius: 25, alignItems: 'center' },
-    finishButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' }
+    finishButtonText: { color: 'white', fontSize: 16, fontWeight: 'bold' },
+    difficultyBadge: { paddingHorizontal: 14, paddingVertical: 5, borderRadius: 20, marginBottom: 12 },
+    difficultyBadgeText: { color: 'white', fontWeight: '800', fontSize: 12, letterSpacing: 1 },
 });
