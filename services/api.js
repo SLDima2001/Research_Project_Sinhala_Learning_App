@@ -39,3 +39,13 @@ export const submitQuiz = async (data) => {
         throw error;
     }
 };
+
+export const generateAIInsight = async (records) => {
+    try {
+        const response = await api.post('/generate-insight', { records });
+        return response.data.insight;
+    } catch (error) {
+        console.error("Error generating AI insight:", error);
+        return null;
+    }
+};

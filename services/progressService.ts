@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateAIInsight } from './api';
 
 export type GameModule = 'text_to_image' | 'storytelling' | 'handwriting' | 'voice_feedback';
 
@@ -132,4 +133,14 @@ export function generateInsight(records: ScoreRecord[]): string {
     }
 
     return `${prediction}Consistency is key. Practicing 15 minutes every day will lead to amazing results!`;
+}
+
+/**
+ * Fetch a real AI-generated insight from the backend.
+ */
+export async function getAIInsight(records: ScoreRecord[]): Promise<string> {
+    if (records.length === 0) return generateInsight([]);
+    
+    const insight = await generateAIInsight(records);
+    return insight || generateInsight(records); // Fallback to local heuristic if API fails
 }

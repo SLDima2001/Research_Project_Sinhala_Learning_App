@@ -13,6 +13,8 @@ import { useAudioPlayer, WordTiming } from '../hooks/useAudioPlayer';
 import { useAudioRecorder } from '../hooks/useAudioRecorder';
 import { usePronunciationFeedback } from '../hooks/usePronunciationFeedback';
 import { useSentences } from '../hooks/useSentences';
+import { useAuth } from '@/context/AuthContext';
+import { saveGameScore } from '@/services/progressService';
 
 type ScreenMode = 'idle' | 'playing' | 'recording' | 'feedback';
 
@@ -20,6 +22,7 @@ export default function PracticeScreen() {
     const router = useRouter();
     // Get sentence ID from params
     const { sentenceId } = useLocalSearchParams();
+    const { user } = useAuth();
 
     // Fetch sentences from backend (with offline fallback)
     const {
@@ -191,13 +194,30 @@ export default function PracticeScreen() {
             setIsCorrect(percentage >= 70);
             setShowFeedback(true);
 
+            // Save score to progress history
+            if (user?.id && currentSentence) {
+                saveGameScore(user.id, {
+                    module: 'voice_feedback',
+                    score: finalScore.score,
+                    maxScore: finalScore.totalWords * Config.APP.POINTS_PER_CORRECT_WORD,
+                    correct: finalScore.correctWords,
+                    total: finalScore.totalWords,
+                    metadata: {
+                        sentenceId: currentSentence.id,
+                        text: currentSentence.text,
+                        percentage: Math.round(percentage)
+                    },
+                    completedAt: new Date().toISOString()
+                }).catch(err => console.error("Failed to save voice score:", err));
+            }
+
             // Hide feedback after 3 seconds
             setTimeout(() => {
                 setShowFeedback(false);
                 setMode('idle');
             }, 3000);
         }
-    }, [pronunciationFeedback.finalScore]);
+    }, [pronunciationFeedback.finalScore, user, currentSentence]);
 
     // Handle audio player completion
     useEffect(() => {

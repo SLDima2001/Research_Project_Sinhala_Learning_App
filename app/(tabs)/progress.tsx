@@ -8,7 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useFocusEffect } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import {
-    getUserProgress, summarizeModule, getCurrentStreak, generateInsight, ScoreRecord
+    getUserProgress, summarizeModule, getCurrentStreak, generateInsight, getAIInsight, ScoreRecord
 } from '@/services/progressService';
 
 const { width } = Dimensions.get('window');
@@ -82,7 +82,20 @@ export default function ProgressScreen() {
     const totalScore = records.reduce((s, r) => s + r.score, 0);
     const maxScore = records.reduce((s, r) => s + r.maxScore, 0);
     const streak = getCurrentStreak(records);
-    const insight = generateInsight(records);
+    const [insight, setInsight] = useState(generateInsight(records));
+    const [insightLoading, setInsightLoading] = useState(false);
+
+    useEffect(() => {
+        const fetchAI = async () => {
+            if (records.length === 0) return;
+            setInsightLoading(true);
+            const aiInsight = await getAIInsight(records);
+            if (aiInsight) setInsight(aiInsight);
+            setInsightLoading(false);
+        };
+        fetchAI();
+    }, [records]);
+
     const recent = [...records].reverse().slice(0, 8);
     const moduleColors: Record<string, string> = Object.fromEntries(MODULES.map(m => [m.key, m.color]));
     const moduleIcons: Record<string, string> = Object.fromEntries(MODULES.map(m => [m.key, m.icon]));
@@ -123,7 +136,11 @@ export default function ProgressScreen() {
                 {/* AI Insight */}
                 <View style={styles.insightCard}>
                     <Text style={styles.insightTitle}>🤖 AI Insight</Text>
-                    <Text style={styles.insightText}>{insight}</Text>
+                    {insightLoading ? (
+                        <ActivityIndicator size="small" color="#9333ea" style={{ alignSelf: 'flex-start', marginTop: 8 }} />
+                    ) : (
+                        <Text style={styles.insightText}>{insight}</Text>
+                    )}
                 </View>
 
                 {/* Overview Ring */}
@@ -154,32 +171,7 @@ export default function ProgressScreen() {
                     ))}
                 </View>
 
-                {/* Recent Activity */}
-                <View style={styles.card}>
-                    <Text style={styles.sectionTitle}>Recent Activity</Text>
-                    {recent.length === 0 ? (
-                        <View style={styles.emptyActivity}>
-                            <Text style={styles.emptyActivityText}>No activity yet — start playing!</Text>
-                        </View>
-                    ) : recent.map((r, i) => {
-                        const pct = r.maxScore > 0 ? Math.round((r.score / r.maxScore) * 100) : 0;
-                        const dateStr = new Date(r.completedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-                        return (
-                            <View key={i} style={styles.activityRow}>
-                                <Text style={styles.activityIcon}>{moduleIcons[r.module] || '🎯'}</Text>
-                                <View style={styles.activityInfo}>
-                                    <Text style={styles.activityModule}>{MODULES.find(m => m.key === r.module)?.label ?? r.module}</Text>
-                                    <Text style={styles.activityDate}>{dateStr}</Text>
-                                </View>
-                                <View style={[styles.activityScore, { backgroundColor: (moduleColors[r.module] ?? '#9333ea') + '20' }]}>
-                                    <Text style={[styles.activityScoreText, { color: moduleColors[r.module] ?? '#9333ea' }]}>
-                                        {r.score} pts · {pct}%
-                                    </Text>
-                                </View>
-                            </View>
-                        );
-                    })}
-                </View>
+                {/* Recent Activity Removed as requested */}
 
                 <View style={{ height: 40 }} />
             </ScrollView>
