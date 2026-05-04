@@ -1,7 +1,3 @@
-import Constants from 'expo-constants';
-import { Platform } from 'react-native';
-import * as Device from 'expo-device';
-
 const getBackendUrl = () => {
     const PORT = 5002;
     // Hardcoded to current LAN IP for reliable connection
