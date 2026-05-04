@@ -55,8 +55,8 @@ export const difficultyVideoMap = {
         hard:   ['saliya_1', 'saliya_2', 'saliya_3', 'saliya_4', 'saliya_5', 'saliya_6', 'saliya_7'],
     },
     story_deer: {
-        easy:   ['deer_intro.mp4'],
-        medium: ['deer_intro.mp4', 'deer_A.mp4'],
+        easy:   ['deer_intro.mp4', 'deer_A.mp4', 'deer_B.mp4'],
+        medium: ['deer_intro.mp4', 'deer_A.mp4', 'deer_B.mp4'],
         hard:   ['deer_intro.mp4', 'deer_A.mp4', 'deer_B.mp4'],
     },
     story_andare: {

@@ -17,6 +17,7 @@ const storyImages = {
   'story_sangamiththa_thero': require('../assets/images/story_cover_sangamiththa_thero.png'),
   'story_king_wessanthara': require('../assets/images/story_cover_king_wessanthara.png'),
   'story_mango_tree': require('../assets/images/story_cover_mango_tree.png'),
+  'story_parakramabahu': require('../assets/images/story_cover_parakramabahu.png'),
   'default': require('../assets/adaptive-icon.png')
 };
 

@@ -1,7 +1,7 @@
 const getBackendUrl = () => {
     const PORT = 5002;
     // Hardcoded to current LAN IP for reliable connection
-    return `http://172.28.28.40:${PORT}`;
+    return `http://192.168.8.178:${PORT}`;
 };
 
 const BASE_URL = getBackendUrl();
