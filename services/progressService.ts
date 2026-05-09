@@ -10,21 +10,18 @@ export interface ScoreRecord {
     correct: number;
     total: number;
     metadata?: Record<string, any>;
-    completedAt: string; // ISO string
+    completedAt: string; 
 }
 
 const getStorageKey = (userId: string) => `progress_${userId}`;
 
-/**
- * Save a game score for a specific user account.
- */
+
 export async function saveGameScore(userId: string, record: ScoreRecord): Promise<void> {
     try {
         const key = getStorageKey(userId);
         const raw = await AsyncStorage.getItem(key);
         const existing: ScoreRecord[] = raw ? JSON.parse(raw) : [];
         existing.push(record);
-        // Keep last 200 records max
         const trimmed = existing.slice(-200);
         await AsyncStorage.setItem(key, JSON.stringify(trimmed));
     } catch (e) {
@@ -32,9 +29,7 @@ export async function saveGameScore(userId: string, record: ScoreRecord): Promis
     }
 }
 
-/**
- * Get all score records for a user.
- */
+
 export async function getUserProgress(userId: string): Promise<ScoreRecord[]> {
     try {
         const key = getStorageKey(userId);
@@ -46,9 +41,7 @@ export async function getUserProgress(userId: string): Promise<ScoreRecord[]> {
     }
 }
 
-/**
- * Summarize progress for a single module.
- */
+
 export function summarizeModule(records: ScoreRecord[], module: GameModule) {
     const filtered = records.filter(r => r.module === module);
     if (!filtered.length) return { total: 0, avg: 0, count: 0, best: 0 };
@@ -57,17 +50,13 @@ export function summarizeModule(records: ScoreRecord[], module: GameModule) {
     return { total, avg: Math.round(total / filtered.length), count: filtered.length, best };
 }
 
-/**
- * Get unique active days (for streak counting).
- */
+
 export function getActivityDays(records: ScoreRecord[]): string[] {
     const days = new Set(records.map(r => r.completedAt.substring(0, 10)));
     return Array.from(days).sort();
 }
 
-/**
- * Calculate current streak (consecutive days including today).
- */
+
 export function getCurrentStreak(records: ScoreRecord[]): number {
     const days = getActivityDays(records);
     if (!days.length) return 0;
@@ -88,21 +77,17 @@ export function getCurrentStreak(records: ScoreRecord[]): number {
     return streak;
 }
 
-/**
- * Generate an AI-style insight based on progress records.
- */
+
 export function generateInsight(records: ScoreRecord[]): string {
     if (records.length === 0) return "🚀 Start playing to see your progress! Your journey to mastering Sinhala starts here.";
 
     const moduleKeys: GameModule[] = ['text_to_image', 'storytelling', 'handwriting', 'voice_feedback'];
     const summaries = moduleKeys.map(k => ({ key: k, ...summarizeModule(records, k) }));
 
-    // Find the module with the lowest average score (if practiced)
     const practiced = summaries.filter(s => s.count > 0);
     const weakest = [...practiced].sort((a, b) => a.avg - b.avg)[0];
     const strongest = [...practiced].sort((a, b) => b.avg - a.avg)[0];
 
-    // Predict progress based on recent trend
     const recent = records.slice(-10);
     const recentAvg = recent.reduce((s, r) => s + (r.score / Math.max(r.maxScore, 1)), 0) / Math.max(recent.length, 1);
 
@@ -115,7 +100,6 @@ export function generateInsight(records: ScoreRecord[]): string {
         prediction = "💪 You're building your foundation. ";
     }
 
-    // Specific improvement advice
     if (weakest && weakest.avg < 70) {
         const moduleName = weakest.key.replace(/_/g, ' ');
         return `${prediction}To improve faster, try focusing more on ${moduleName} practice. Your average there is ${weakest.avg}%.`;
@@ -135,12 +119,9 @@ export function generateInsight(records: ScoreRecord[]): string {
     return `${prediction}Consistency is key. Practicing 15 minutes every day will lead to amazing results!`;
 }
 
-/**
- * Fetch a real AI-generated insight from the backend.
- */
+
 export async function getAIInsight(records: ScoreRecord[]): Promise<string> {
     if (records.length === 0) return generateInsight([]);
-    
     const insight = await generateAIInsight(records);
-    return insight || generateInsight(records); // Fallback to local heuristic if API fails
+    return insight || generateInsight(records); 
 }

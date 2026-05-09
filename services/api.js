@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Platform } from 'react-native';
 
-// Use your computer's local IP address (run 'ipconfig' to find it)
+
 const API_IP = '192.168.1.108';
 const API_URL = `http://${API_IP}:5002/api`;
 

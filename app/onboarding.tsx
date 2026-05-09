@@ -75,7 +75,7 @@ export default function OnboardingScreen() {
                 </Animated.View>
 
                 <Animated.View entering={FadeInUp.delay(400)} style={styles.textWrapper}>
-                    {/* Organic Wavy Shape */}
+                    {}
                     <View style={styles.svgContainer}>
                         <Svg
                             height="100"
@@ -90,11 +90,9 @@ export default function OnboardingScreen() {
                             />
                         </Svg>
                     </View>
-                    
                     <View style={styles.whiteSection}>
                         <Text style={[styles.title, { color: item.color }]}>{item.title}</Text>
                         <Text style={styles.description}>{item.description}</Text>
-                        
                         <View style={styles.footer}>
                             <View style={styles.pagination}>
                                 {ONBOARDING_DATA.map((_, i) => (
@@ -165,7 +163,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 40,
-        marginBottom: -30, // Move image closer to the wave
+        marginBottom: -30, 
     },
     image: {
         width: width * 0.75,
@@ -177,7 +175,7 @@ const styles = StyleSheet.create({
     svgContainer: {
         width: width,
         height: 100,
-        marginBottom: -1, // Prevent pixel gap
+        marginBottom: -1, 
     },
     waveSvg: {
         position: 'absolute',

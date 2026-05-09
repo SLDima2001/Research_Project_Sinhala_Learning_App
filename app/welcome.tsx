@@ -39,7 +39,7 @@ export default function WelcomeScreen() {
 
     return (
         <View style={styles.container}>
-            {/* Background Decorations */}
+            {}
             <View style={styles.bgDecor}>
                 <Svg height={height} width={width} style={StyleSheet.absoluteFill}>
                     <Circle cx={width * 0.1} cy={height * 0.1} r={60} fill={Colors.sunnyYellow} opacity={0.3} />

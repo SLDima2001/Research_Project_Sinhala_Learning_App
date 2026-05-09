@@ -79,7 +79,7 @@ export default function ExploreScreen() {
         <Text style={styles.subtitle}>Sinhala Handwriting Practice App</Text>
       </View>
 
-      {/* API Status Card */}
+      {}
       <ThemedView style={styles.card}>
         <ThemedText type="subtitle" style={styles.cardTitle}>
           API තත්ත්වය (API Status)
@@ -100,7 +100,7 @@ export default function ExploreScreen() {
         </TouchableOpacity>
       </ThemedView>
 
-      {/* About Card */}
+      {}
       <ThemedView style={styles.card}>
         <ThemedText type="subtitle" style={styles.cardTitle}>
           යෙදුම ගැන (About App)
@@ -113,7 +113,7 @@ export default function ExploreScreen() {
         </ThemedText>
       </ThemedView>
 
-      {/* Letters Card */}
+      {}
       <ThemedView style={styles.card}>
         <ThemedText type="subtitle" style={styles.cardTitle}>
           පුහුණු අකුරු ({letters.length})
@@ -135,7 +135,7 @@ export default function ExploreScreen() {
         )}
       </ThemedView>
 
-      {/* Features Card */}
+      {}
       <ThemedView style={styles.card}>
         <ThemedText type="subtitle" style={styles.cardTitle}>
           විශේෂාංග (Features)
@@ -166,7 +166,7 @@ export default function ExploreScreen() {
         </View>
       </ThemedView>
 
-      {/* Instructions Card */}
+      {}
       <ThemedView style={styles.card}>
         <ThemedText type="subtitle" style={styles.cardTitle}>
           භාවිතය (How to Use)
@@ -197,7 +197,7 @@ export default function ExploreScreen() {
         </View>
       </ThemedView>
 
-      {/* API Info Card */}
+      {}
       <ThemedView style={styles.card}>
         <ThemedText type="subtitle" style={styles.cardTitle}>
           තාක්ෂණික තොරතුරු

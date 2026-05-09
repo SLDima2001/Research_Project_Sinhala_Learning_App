@@ -7,7 +7,6 @@ export default function DecisionScene({ data, onNext }) {
     return (
         <View style={styles.container}>
             <Text style={styles.question}>{data.text}</Text>
-            
             <Image 
                 source={{ uri: IMAGE_PLACEHOLDER }} 
                 style={styles.image} 

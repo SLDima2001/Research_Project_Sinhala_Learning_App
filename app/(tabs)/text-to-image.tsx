@@ -25,12 +25,12 @@ const SINHALA_WORDS = [
   'පන්සල', 'මිනිසා', 'ළමයා', 'එළුවා', 'බුකුටා'
 ];
 
-// ⚠️ IMPORTANT: REPLACE WITH YOUR COMPUTER'S IP ADDRESS
-// To find your IP:
-// - Windows: Open CMD and type 'ipconfig', look for IPv4 Address
-// - Mac/Linux: Open Terminal and type 'ifconfig', look for inet
-// Example: const API_URL = 'http://192.168.1.100:5001';
-const API_IP = '192.168.1.108'; // Matches practice.tsx IP
+
+
+
+
+
+const API_IP = '192.168.1.108'; 
 const API_URL = Platform.OS === 'android' && !API_IP.startsWith('192') ? 'http://10.0.2.2:5002' : `http://${API_IP}:5002`;
 
 export default function HomeScreen() {
@@ -47,7 +47,6 @@ export default function HomeScreen() {
   const [gameImage, setGameImage] = useState<string | null>(null);
   const [gameOptions, setGameOptions] = useState<string[]>([]);
   const [gameStatus, setGameStatus] = useState<'playing' | 'won' | 'lost'>('playing');
-  // Score tracking
   const [sessionCorrect, setSessionCorrect] = useState(0);
   const [sessionTotal, setSessionTotal] = useState(0);
   const cameraRef = useRef<CameraView>(null);
@@ -125,7 +124,6 @@ export default function HomeScreen() {
     setConfidence(0);
 
     try {
-      // Use the combined endpoint for better performance
       const formData = new FormData();
       const fileType = imageUri.split('.').pop() || 'jpg';
 
@@ -162,16 +160,13 @@ export default function HomeScreen() {
         throw new Error(data.detail || data.error || 'Processing failed');
       }
 
-      // Set detected text and confidence
       setDetectedText(data.detected_text || '');
       setConfidence(data.confidence || 0);
 
-      // Set generated image
       if (data.image) {
         setGeneratedImage(`data:image/jpeg;base64,${data.image}`);
         setStep('result');
 
-        // Show success message
         Alert.alert(
           'සාර්ථකයි! 🎉',
           `හඳුනාගත් වචනය: ${data.detected_text}\nවිශ්වාසය: ${(data.confidence * 100).toFixed(1)}%`
@@ -210,7 +205,6 @@ export default function HomeScreen() {
 
     try {
       console.log('Regenerating for:', detectedText);
-      // Explicitly set randomize: true for shuffle
       const response = await fetch(`${API_URL}/api/ti/generate-image`, {
         method: 'POST',
         headers: {
@@ -219,7 +213,7 @@ export default function HomeScreen() {
         body: JSON.stringify({
           prompt: detectedText,
           randomize: true,
-          deepSearch: true // Signal to backend we want broad results
+          deepSearch: true 
         }),
       });
 
@@ -491,7 +485,7 @@ export default function HomeScreen() {
 
         {step === 'game' && gameImage && (
           <ThemedView style={styles.gameWrapper}>
-            {/* Always-visible back button + score */}
+            {}
             <View style={styles.gameHeader}>
               <TouchableOpacity style={styles.gameBackBtn} onPress={handleBackFromGame}>
                 <ThemedText style={styles.gameBackText}>← ආපසු</ThemedText>

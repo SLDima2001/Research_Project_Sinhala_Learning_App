@@ -16,21 +16,11 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="explore"
-        options={{
-          title: 'Explore',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'compass' : 'compass-outline'} size={24} color={color} />
-          ),
-        }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="practice"
-        options={{
-          title: 'Practice',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'pencil' : 'pencil-outline'} size={24} color={color} />
-          ),
-        }}
+        options={{ href: null }}
       />
       <Tabs.Screen
         name="features"
@@ -44,15 +34,9 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="components-test"
-        options={{
-          title: 'Test',
-          tabBarIcon: ({ color, focused }) => (
-            <Ionicons name={focused ? 'flask' : 'flask-outline'} size={24} color={color} />
-          ),
-          tabBarActiveTintColor: '#6366F1',
-        }}
+        options={{ href: null }}
       />
-      {/* Hidden Screens for navigation from features */}
+      {}
       <Tabs.Screen
         name="handwriting"
         options={{ href: null }}
@@ -71,7 +55,13 @@ export default function TabLayout() {
       />
       <Tabs.Screen
         name="progress"
-        options={{ href: null }}
+        options={{
+          title: 'Progress',
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'stats-chart' : 'stats-chart-outline'} size={24} color={color} />
+          ),
+          tabBarActiveTintColor: '#FF9800',
+        }}
       />
     </Tabs>
   );

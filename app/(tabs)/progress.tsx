@@ -121,7 +121,7 @@ export default function ProgressScreen() {
                 showsVerticalScrollIndicator={false}
                 refreshControl={<RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); load(); }} tintColor="#9333ea" />}
             >
-                {/* Header */}
+                {}
                 <View style={styles.header}>
                     <View>
                         <Text style={styles.headerGreeting}>Progress Report</Text>
@@ -133,7 +133,7 @@ export default function ProgressScreen() {
                     </View>
                 </View>
 
-                {/* AI Insight */}
+                {}
                 <View style={styles.insightCard}>
                     <Text style={styles.insightTitle}>🤖 AI Insight</Text>
                     {insightLoading ? (
@@ -143,7 +143,7 @@ export default function ProgressScreen() {
                     )}
                 </View>
 
-                {/* Overview Ring */}
+                {}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Overall Performance</Text>
                     <ProgressRing totalScore={totalScore} maxScore={maxScore} />
@@ -163,7 +163,7 @@ export default function ProgressScreen() {
                     </View>
                 </View>
 
-                {/* Module Breakdown */}
+                {}
                 <View style={styles.card}>
                     <Text style={styles.sectionTitle}>Module Breakdown</Text>
                     {MODULES.map(mod => (
@@ -171,7 +171,7 @@ export default function ProgressScreen() {
                     ))}
                 </View>
 
-                {/* Recent Activity Removed as requested */}
+                {}
 
                 <View style={{ height: 40 }} />
             </ScrollView>
@@ -207,7 +207,6 @@ const styles = StyleSheet.create({
         shadowRadius: 8, elevation: 3,
     },
     sectionTitle: { fontSize: 16, fontWeight: '700', color: '#111827', marginBottom: 16 },
-    // Ring
     ringWrapper: { alignItems: 'center', marginBottom: 20 },
     ringOuter: {
         width: 140, height: 140, borderRadius: 70, borderWidth: 10,
@@ -217,13 +216,11 @@ const styles = StyleSheet.create({
     gradeText: { fontSize: 36, fontWeight: '800' },
     ringScore: { fontSize: 16, fontWeight: '600', color: '#374151' },
     ringLabel: { fontSize: 11, color: '#9ca3af' },
-    // Stats row
     statsRow: { flexDirection: 'row', justifyContent: 'space-around', borderTopWidth: 1, borderTopColor: '#f3f4f6', paddingTop: 16 },
     statItem: { alignItems: 'center', flex: 1 },
     statDivider: { borderLeftWidth: 1, borderRightWidth: 1, borderColor: '#f3f4f6' },
     statNum: { fontSize: 22, fontWeight: '800', color: '#111827' },
     statLabel: { fontSize: 11, color: '#9ca3af', marginTop: 2 },
-    // Module bars
     moduleRow: { flexDirection: 'row', alignItems: 'center', marginBottom: 16 },
     moduleIcon: { fontSize: 24, marginRight: 12 },
     moduleInfo: { flex: 1 },
@@ -232,7 +229,6 @@ const styles = StyleSheet.create({
     moduleStats: { fontSize: 12, color: '#9ca3af' },
     barBg: { height: 8, backgroundColor: '#f3f4f6', borderRadius: 4, overflow: 'hidden' },
     barFill: { height: 8, borderRadius: 4 },
-    // Activity
     activityRow: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, borderBottomWidth: 1, borderBottomColor: '#f9fafb' },
     activityIcon: { fontSize: 22, marginRight: 12 },
     activityInfo: { flex: 1 },

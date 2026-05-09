@@ -2,8 +2,8 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import * as SecureStore from 'expo-secure-store';
 import axios from 'axios';
 
-// API Base URL - Update this to your backend URL
-// Use your computer's IP address (not localhost) when testing on physical device/emulator
+
+
 const API_URL = 'http://192.168.1.108:5002/api/auth';
 
 interface User {
@@ -30,7 +30,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const [user, setUser] = useState<User | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    // Check authentication status on app launch
     useEffect(() => {
         checkAuth();
     }, []);
@@ -46,7 +45,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                 return;
             }
 
-            // Verify token with backend
             const response = await axios.get(`${API_URL}/verify`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -56,13 +54,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             if (response.data.success && response.data.user) {
                 setUser(response.data.user);
             } else {
-                // Invalid token, clear it
                 await SecureStore.deleteItemAsync(TOKEN_KEY);
                 setUser(null);
             }
         } catch (error) {
             console.error('Auth check error:', error);
-            // Clear invalid token
             await SecureStore.deleteItemAsync(TOKEN_KEY);
             setUser(null);
         } finally {
@@ -79,7 +75,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
 
             if (response.data.success && response.data.token) {
-                // Store token
                 await SecureStore.setItemAsync(TOKEN_KEY, response.data.token);
                 setUser(response.data.user);
                 return { success: true };
@@ -105,7 +100,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             });
 
             if (response.data.success && response.data.token) {
-                // Store token
                 await SecureStore.setItemAsync(TOKEN_KEY, response.data.token);
                 setUser(response.data.user);
                 return { success: true };

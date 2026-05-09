@@ -9,7 +9,6 @@ export default function QuizScene({ data, onNext, onScore }) {
     const handleAnswer = (option) => {
         const currentQuestion = data.questions[currentQuestionIndex];
         let newScore = score;
-        
         if (option === currentQuestion.correct_answer) {
             newScore += 1;
             setScore(newScore);
@@ -23,7 +22,7 @@ export default function QuizScene({ data, onNext, onScore }) {
     };
 
     const finishQuiz = (finalScore) => {
-        const points = finalScore * 20; // 20 points per question
+        const points = finalScore * 20; 
         onScore(points);
         onNext(data.next_scene_id, { quizScore: finalScore, totalQuestions: data.questions.length });
     };
@@ -34,10 +33,8 @@ export default function QuizScene({ data, onNext, onScore }) {
         <View style={styles.container}>
             <Text style={styles.header}>Quiz Time!</Text>
             <Text style={styles.progress}>Question {currentQuestionIndex + 1}/{data.questions.length}</Text>
-            
             <View style={styles.card}>
                 <Text style={styles.question}>{currentQuestion.question}</Text>
-                
                 {currentQuestion.options.map((option, idx) => (
                     <TouchableOpacity 
                         key={idx} 

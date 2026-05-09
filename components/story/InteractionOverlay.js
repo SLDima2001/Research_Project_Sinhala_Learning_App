@@ -9,7 +9,6 @@ export default function InteractionOverlay({ interaction, onOptionSelect }) {
             <View style={styles.card}>
                 <Text style={styles.title}>{interaction.type === 'decision' ? 'Make a Choice' : 'Quick Quiz'}</Text>
                 <Text style={styles.question}>{interaction.text}</Text>
-                
                 <View style={styles.options}>
                     {interaction.options.map((option, idx) => (
                         <TouchableOpacity 
@@ -30,7 +29,7 @@ const styles = StyleSheet.create({
     overlay: {
         position: 'absolute',
         top: 0, left: 0, right: 0, bottom: 0,
-        backgroundColor: 'rgba(0,0,0,0.7)', // Semi-transparent black
+        backgroundColor: 'rgba(0,0,0,0.7)', 
         justifyContent: 'center',
         alignItems: 'center',
         zIndex: 10

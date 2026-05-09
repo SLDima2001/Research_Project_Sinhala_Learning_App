@@ -20,12 +20,9 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
     const [paths, setPaths] = useState<string[]>([]);
     const [currentPath, setCurrentPath] = useState('');
     const viewRef = useRef<View>(null);
-    
-    // Use refs to store the latest values without causing re-renders
     const pathsRef = useRef<string[]>([]);
     const currentPathRef = useRef('');
 
-    // Keep refs in sync with state
     useEffect(() => {
       pathsRef.current = paths;
     }, [paths]);
@@ -34,39 +31,28 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
       currentPathRef.current = currentPath;
     }, [currentPath]);
 
-    // Create PanResponder
     const panResponder = useRef(
       PanResponder.create({
         onStartShouldSetPanResponder: () => true,
         onMoveShouldSetPanResponder: () => true,
-        
-        // When touch starts
         onPanResponderGrant: (event) => {
           const { locationX, locationY } = event.nativeEvent;
           const newPath = `M${locationX},${locationY}`;
           currentPathRef.current = newPath;
           setCurrentPath(newPath);
         },
-        
-        // When finger moves
         onPanResponderMove: (event) => {
           const { locationX, locationY } = event.nativeEvent;
           const newPath = `${currentPathRef.current} L${locationX},${locationY}`;
           currentPathRef.current = newPath;
           setCurrentPath(newPath);
         },
-        
-        // When finger lifts
         onPanResponderRelease: () => {
           if (currentPathRef.current) {
-            // Save the completed path
             const completedPath = currentPathRef.current;
             const newPaths = [...pathsRef.current, completedPath];
-            
             setPaths(newPaths);
             pathsRef.current = newPaths;
-            
-            // Clear current path
             currentPathRef.current = '';
             setCurrentPath('');
           }
@@ -74,7 +60,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
       })
     ).current;
 
-    // Clear all paths
     const clear = useCallback(() => {
       setPaths([]);
       setCurrentPath('');
@@ -82,7 +67,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
       currentPathRef.current = '';
     }, []);
 
-    // Undo last path
     const undo = useCallback(() => {
       if (pathsRef.current.length > 0) {
         const newPaths = pathsRef.current.slice(0, -1);
@@ -91,7 +75,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
       }
     }, []);
 
-    // Capture canvas as image
     const capture = useCallback(async (): Promise<string | null> => {
       try {
         if (viewRef.current) {
@@ -99,7 +82,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
             format: 'png',
             quality: 1.0,
           });
-          
           if (onCapture) {
             onCapture(uri);
           }
@@ -112,7 +94,6 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
       }
     }, [onCapture]);
 
-    // Expose methods to parent component
     useImperativeHandle(ref, () => ({
       clear,
       capture,
@@ -129,7 +110,7 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
           {...panResponder.panHandlers}
         >
           <Svg height={canvasHeight} width={canvasWidth}>
-            {/* Render all completed paths */}
+            {}
             {paths.map((path, index) => (
               <Path
                 key={`path-${index}`}
@@ -141,8 +122,7 @@ const DrawingCanvas = forwardRef<DrawingCanvasRef, DrawingCanvasProps>(
                 strokeLinejoin="round"
               />
             ))}
-            
-            {/* Render current path being drawn */}
+            {}
             {currentPath && (
               <Path
                 d={currentPath}

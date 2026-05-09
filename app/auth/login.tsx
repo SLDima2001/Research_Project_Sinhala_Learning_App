@@ -32,7 +32,6 @@ export default function LoginScreen() {
         setIsLoading(false);
 
         if (result.success) {
-            // Navigation will be handled automatically by _layout.tsx
             router.replace('/(tabs)');
         } else {
             Alert.alert('Login Failed', result.message || 'Invalid credentials');

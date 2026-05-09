@@ -11,7 +11,7 @@ export default function FeaturesScreen() {
             title: 'Handwriting Recognition',
             icon: 'pencil' as const,
             color: '#4CAF50',
-            route: '/(tabs)/handwriting',
+            route: '/(tabs)/practice',
             description: 'Practice writing Sinhala letters with AI feedback'
         },
         {

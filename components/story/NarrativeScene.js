@@ -10,17 +10,13 @@ export default function NarrativeScene({ data, onNext, onWordClick }) {
     const videoRef = useRef(null);
 
     useEffect(() => {
-        // Reset animation
         fadeAnim.setValue(0);
-        
-        // Start Text Animation (Line by line effect simulated by fade in)
         Animated.timing(fadeAnim, {
             toValue: 1,
             duration: 2000, 
             useNativeDriver: true,
         }).start();
 
-        // Auto-play Audio (Mock logic: Try to load if local, or just simulate)
         playAudio();
 
         return () => {
@@ -29,9 +25,6 @@ export default function NarrativeScene({ data, onNext, onWordClick }) {
     }, [data]);
 
     const playAudio = async () => {
-        // In a real app, we would load `data.audio`. 
-        // Since we don't have files, we just log it.
-        // console.log("Playing audio:", data.audio);
     };
 
     const renderText = () => {
@@ -44,7 +37,6 @@ export default function NarrativeScene({ data, onNext, onWordClick }) {
                     {words.map((word, index) => {
                         const cleanWord = word.replace(/[.,!?"'()]/g, '');
                         const vocabItem = vocab.find(v => v.word === cleanWord || v.word === word);
-                        
                         if (vocabItem) {
                             return (
                                 <Text key={index} style={styles.highlight} onPress={() => onWordClick(vocabItem)}>
@@ -79,7 +71,6 @@ export default function NarrativeScene({ data, onNext, onWordClick }) {
                     resizeMode="cover"
                 />
             )}
-            
             <View style={styles.textContainer}>
                 {renderText()}
             </View>

@@ -24,7 +24,6 @@ export default function RegisterScreen() {
     const router = useRouter();
 
     const handleRegister = async () => {
-        // Validation
         if (!email.trim() || !password.trim()) {
             Alert.alert('Error', 'Please enter email and password');
             return;
@@ -45,7 +44,6 @@ export default function RegisterScreen() {
         setIsLoading(false);
 
         if (result.success) {
-            // Navigation will be handled automatically by _layout.tsx
             router.replace('/(tabs)');
         } else {
             Alert.alert('Registration Failed', result.message || 'Please try again');

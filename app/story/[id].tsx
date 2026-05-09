@@ -9,12 +9,12 @@ import { getStory } from '@/services/api';
 import { useAuth } from '@/context/AuthContext';
 import { saveGameScore } from '@/services/progressService';
 
-// Legacy Components
+
 import NarrativeScene from '@/components/story/NarrativeScene';
 import DecisionScene from '@/components/story/DecisionScene';
 import ActivityScene from '@/components/story/ActivityScene';
 import QuizScene from '@/components/story/QuizScene';
-// New Video Components
+
 import InteractionOverlay from '@/components/story/InteractionOverlay';
 
 export default function StoryScreen() {
@@ -27,18 +27,15 @@ export default function StoryScreen() {
     const [story, setStory] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    // Legacy State
     const [currentSceneId, setCurrentSceneId] = useState('scene_1_intro');
 
-    // Video Engine State
     const videoRef = useRef<Video>(null);
     const [currentSegmentId, setCurrentSegmentId] = useState('segment_1_intro');
     const [interactionData, setInteractionData] = useState<any>(null);
     const [playbackStatus, setPlaybackStatus] = useState<any>(null);
-    const [videoSource, setVideoSource] = useState<any>(null); // Local URI state
+    const [videoSource, setVideoSource] = useState<any>(null); 
     const [userHistory, setUserHistory] = useState<any[]>([]);
 
-    // UI State
     const [showScoreModal, setShowScoreModal] = useState(false);
     const [finalScore, setFinalScore] = useState(0);
 
@@ -66,9 +63,6 @@ export default function StoryScreen() {
         setLoading(false);
     };
 
-    // ==========================================
-    // VIDEO ASSET LOADER (Fixes NAL Error)
-    // ==========================================
     useEffect(() => {
         if (!story || story.type !== 'video_interactive') return;
 
@@ -78,18 +72,14 @@ export default function StoryScreen() {
         const loadVideo = async () => {
             if (!segment) return;
 
-            // Priority 1: Direct URL from Database (User Request: "videos path only add the database")
             if (segment.video_url && segment.video_url.trim() !== '') {
                 setVideoSource({ uri: segment.video_url });
                 return;
             }
 
-            // Priority 2: Legacy Local Asset Map ("show the previous wize")
             if (!videoId) return;
 
             try {
-                // Return if we already have this source loaded (optimisation)
-                // But simple approach is safer: reset -> load -> set
                 setVideoSource(null);
 
                 const { getVideoSource } = require('@/services/videoMap');
@@ -115,12 +105,9 @@ export default function StoryScreen() {
 
         loadVideo();
 
-    }, [currentSegmentId, story]); // Re-run when segment changes
+    }, [currentSegmentId, story]); 
 
 
-    // ==========================================
-    // VIDEO LOGIC
-    // ==========================================
     const handleVideoUpdate = (status: any) => {
         if (!status.isLoaded || !story || story.type !== 'video_interactive') return;
         setPlaybackStatus(status);
@@ -128,7 +115,6 @@ export default function StoryScreen() {
         const segment = story.segments[currentSegmentId];
         if (!segment) return;
 
-        // Match end time to finish segment
         if ((status.isPlaying && status.positionMillis >= segment.end_time) || status.didJustFinish) {
             videoRef.current?.pauseAsync();
             const nextId = segment.next_segment_id;
@@ -161,13 +147,11 @@ export default function StoryScreen() {
     };
 
     const proceedToNext = async (nextId: string) => {
-        // 1. Check if next step is another interaction (Chained Quiz)
         if (story.interactions[nextId]) {
             setInteractionData(story.interactions[nextId]);
             return;
         }
 
-        // 2. Hide current overlay if moving to video/end
         setInteractionData(null);
 
         if (nextId === 'end_screen') {
@@ -175,7 +159,6 @@ export default function StoryScreen() {
             return;
         }
 
-        // 3. Change Video Segment
         changeSegment(nextId);
     };
 
@@ -183,13 +166,11 @@ export default function StoryScreen() {
         const segment = story.segments[segmentId];
         if (!segment) return;
 
-        // Clean switch
         setInteractionData(null);
         setPlaybackStatus(null);
 
         setStory((prev: any) => ({ ...prev, _reloading: true }));
 
-        // Small delay to allow UI to clear before mounting new video
         setTimeout(() => {
             setCurrentSegmentId(segmentId);
             setStory((prev: any) => ({ ...prev, _reloading: false }));
@@ -208,13 +189,11 @@ export default function StoryScreen() {
         };
 
         try {
-            // Save to legacy global key (backwards compat)
             const existing = await AsyncStorage.getItem('user_progress');
             let progress = existing ? JSON.parse(existing) : [];
             progress.push(resultData);
             await AsyncStorage.setItem('user_progress', JSON.stringify(progress));
 
-            // Also save to per-user progress service
             if (user?.id) {
                 await saveGameScore(user.id, {
                     module: 'storytelling',
@@ -234,17 +213,12 @@ export default function StoryScreen() {
         setShowScoreModal(true);
     };
 
-    // ==========================================
-    // RENDER
-    // ==========================================
     if (loading || !story) return <View style={styles.center}><Text>Loading...</Text></View>;
 
-    // 1. VIDEO INTERACTIVE MODE
     if (story.type === 'video_interactive') {
         const segment = story.segments[currentSegmentId];
         const videoId = segment?.video_id;
 
-        // Transition State
         if (story._reloading || !videoSource) {
             return (
                 <View style={[styles.center, { backgroundColor: 'black' }]}>
@@ -287,7 +261,7 @@ export default function StoryScreen() {
                     />
                 )}
 
-                {/* 3. FINAL SCORE MODAL */}
+                {}
                 <Modal
                     transparent={true}
                     visible={showScoreModal}
@@ -320,7 +294,6 @@ export default function StoryScreen() {
         );
     }
 
-    // 2. LEGACY SCENE MODE
     const scene = story.scenes[currentSceneId];
     if (!scene) return <View style={styles.center}><Text>Scene not found</Text></View>;
     const sceneType = scene.type || 'narrative';
@@ -340,7 +313,7 @@ export default function StoryScreen() {
             {sceneType === 'activity' && <ActivityScene data={scene} onNext={handleLegacyNext} onScore={(s: number) => setFinalScore(prev => prev + s)} />}
             {sceneType === 'quiz' && <QuizScene data={scene} onNext={handleLegacyNext} onScore={(s: number) => setFinalScore(prev => prev + s)} />}
 
-            {/* 3. FINAL SCORE MODAL */}
+            {}
             <Modal
                 transparent={true}
                 visible={showScoreModal}
@@ -378,7 +351,6 @@ const styles = StyleSheet.create({
     center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
     videoWrapper: { width: '100%', height: '100%', justifyContent: 'center', alignItems: 'center' },
     fullscreenVideo: { width: '100%', height: '100%' },
-    // Modal Styles
     modalOverlay: { flex: 1, backgroundColor: 'rgba(0,0,0,0.8)', justifyContent: 'center', alignItems: 'center' },
     modalCard: { width: '80%', backgroundColor: 'white', borderRadius: 20, padding: 30, alignItems: 'center', elevation: 5 },
     modalTitle: { fontSize: 24, fontWeight: 'bold', marginBottom: 10, color: '#333' },

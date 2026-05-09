@@ -4,11 +4,10 @@ import { getStories } from '../services/api';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 
-// Image Mapping (In a real app, this might come from the backend or a separate config)
+
 const storyImages = {
   'story_dutugemunu': require('../../assets/images/story_cover_dutugemunu.png'), 
   'story_prince_saliya': require('../../assets/images/story_cover_prince_saliya.png'),
-  // Default fallback if ID doesn't match
   'default': require('../../assets/adaptive-icon.png') 
 };
 

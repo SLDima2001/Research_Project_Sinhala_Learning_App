@@ -22,9 +22,7 @@ import FairyBackground from '@/components/FairyBackground';
 
 const { width } = Dimensions.get('window');
 
-/* ──────────────────────────────────────────────
-   Small helpers
-────────────────────────────────────────────── */
+
 
 const SectionHeader = ({ emoji, title, subtitle }: { emoji: string; title: string; subtitle?: string }) => (
     <View style={styles.sectionHeader}>
@@ -60,18 +58,13 @@ const CtrlBtn = ({
     </TouchableOpacity>
 );
 
-/* ──────────────────────────────────────────────
-   Main Screen
-────────────────────────────────────────────── */
+
 
 export default function ComponentsTestScreen() {
-    // === ScoreDisplay ===
     const [score, setScore] = useState(75);
 
-    // === RecordingButton ===
     const [isRecording, setIsRecording] = useState(false);
 
-    // === KaraokeDisplay ===
     const karaokeWords: KaraokeWord[] = [
         { text: 'ආයුබෝවන්', status: 'correct' },
         { text: 'සුභ', status: 'incorrect' },
@@ -80,16 +73,14 @@ export default function ComponentsTestScreen() {
     const [karaokeMode, setKaraokeMode] = useState<'idle' | 'playback' | 'recording'>('idle');
     const [karaokeWordIdx, setKaraokeWordIdx] = useState(0);
 
-    // === DrawingCanvas ===
     const canvasRef = useRef<DrawingCanvasRef>(null);
 
-    // === FeedbackDisplay ===
     const [feedbackVisible, setFeedbackVisible] = useState(false);
     const [feedbackCorrect, setFeedbackCorrect] = useState(true);
 
     return (
         <SafeAreaView style={styles.safeArea}>
-            {/* Page Title */}
+            {}
             <View style={styles.pageHeader}>
                 <Ionicons name="flask" size={22} color="#6366F1" />
                 <Text style={styles.pageTitle}>Component Showcase</Text>
@@ -98,7 +89,7 @@ export default function ComponentsTestScreen() {
 
             <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
 
-                {/* ── 1. ScoreDisplay ─────────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="🏆" title="ScoreDisplay" subtitle="Tap buttons to change score" />
                     <ScoreDisplay score={score} maxScore={100} showStars />
@@ -115,7 +106,7 @@ export default function ComponentsTestScreen() {
                     </ControlRow>
                 </View>
 
-                {/* ── 2. SentenceCard ─────────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="🃏" title="SentenceCard" subtitle="Tap a card to trigger onPress" />
                     {[
@@ -132,7 +123,7 @@ export default function ComponentsTestScreen() {
                     ))}
                 </View>
 
-                {/* ── 3. GameLevelButton ──────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="🎮" title="GameLevelButton" subtitle="3 states: locked · current · completed" />
                     <View style={styles.levelRow}>
@@ -149,7 +140,7 @@ export default function ComponentsTestScreen() {
                     </View>
                 </View>
 
-                {/* ── 4. RecordingButton ──────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="🎤" title="RecordingButton" subtitle="Toggle recording state" />
                     <View style={styles.centeredRow}>
@@ -168,7 +159,7 @@ export default function ComponentsTestScreen() {
                     </ControlRow>
                 </View>
 
-                {/* ── 5. KaraokeDisplay ───────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="🎵" title="KaraokeDisplay" subtitle="Switch mode & highlighted word" />
                     <KaraokeDisplay
@@ -195,7 +186,7 @@ export default function ComponentsTestScreen() {
                     </ControlRow>
                 </View>
 
-                {/* ── 6. DrawingCanvas ────────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="✍️" title="DrawingCanvas" subtitle="Draw with your finger" />
                     <View style={styles.canvasWrapper}>
@@ -219,7 +210,7 @@ export default function ComponentsTestScreen() {
                     </ControlRow>
                 </View>
 
-                {/* ── 7. FeedbackDisplay ──────────────────────── */}
+                {}
                 <View style={[styles.card, { minHeight: 220 }]}>
                     <SectionHeader emoji="💬" title="FeedbackDisplay" subtitle="Overlay pops at the bottom of this card" />
                     <ControlRow>
@@ -248,7 +239,7 @@ export default function ComponentsTestScreen() {
                     />
                 </View>
 
-                {/* ── 8. FairyBackground ──────────────────────── */}
+                {}
                 <View style={styles.card}>
                     <SectionHeader emoji="🌿" title="FairyBackground" subtitle="Animated bubble background" />
                     <View style={styles.fairyPreview}>
@@ -267,9 +258,7 @@ export default function ComponentsTestScreen() {
     );
 }
 
-/* ──────────────────────────────────────────────
-   Styles
-────────────────────────────────────────────── */
+
 
 const styles = StyleSheet.create({
     safeArea: {

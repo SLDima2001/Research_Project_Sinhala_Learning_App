@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions, ImageBackground } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '@/context/AuthContext';
 import { Ionicons } from '@expo/vector-icons';
@@ -14,78 +14,40 @@ export default function DashboardScreen() {
     await logout();
   };
 
-  const menuItems = [
-    {
-      title: 'Sinhala Handwriting',
-      icon: 'pencil' as const,
-      color: '#4CAF50',
-      route: '/(tabs)/practice',
-      description: 'Practice writing Sinhala letters with AI feedback'
-    },
-    {
-      title: 'Lessons',
-      icon: 'book' as const,
-      color: '#2196F3',
-      route: '/(tabs)/explore', // Or placeholder
-      description: 'Learn Sinhala grammar and vocabulary'
-    },
-    {
-      title: 'Progress',
-      icon: 'stats-chart' as const,
-      color: '#FF9800',
-      route: '/(tabs)/progress',
-      description: 'View your learning statistics'
-    },
-    {
-      title: 'Settings',
-      icon: 'settings' as const,
-      color: '#9C27B0',
-      route: '/(tabs)/explore', // Placeholder
-      description: 'App preferences and account settings'
-    },
-    {
-      title: 'Text to Image',
-      icon: 'image' as const,
-      color: '#E91E63',
-      route: '/(tabs)/text-to-image',
-      description: 'Generate images from Sinhala words'
-    }
-  ];
-
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.header}>
-        <View>
-          <Text style={styles.greeting}>Welcome back,</Text>
-          <Text style={styles.username}>{user?.name || 'Student'}</Text>
+      <ImageBackground 
+        source={require('../../assets/images/sinhala_letters_bg.png')} 
+        style={styles.backgroundImage}
+        resizeMode="cover"
+      >
+        <View style={styles.header}>
+          <View>
+            <Text style={styles.greeting}>Welcome back,</Text>
+            <Text style={styles.username}>{user?.name || 'Student'}</Text>
+          </View>
+          <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+            <Ionicons name="log-out-outline" size={24} color="#333" />
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-          <Ionicons name="log-out-outline" size={24} color="#333" />
-        </TouchableOpacity>
-      </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.sectionTitle}>Dashboard</Text>
-
-        <View style={styles.grid}>
-          {menuItems.map((item, index) => (
+        <View style={[styles.content, { flex: 1, justifyContent: 'center', alignItems: 'center' }]}>
+          <View style={styles.overlayContainer}>
+            <Text style={{ fontSize: 50, fontWeight: 'bold', color: '#9653c4ff', marginBottom: 20, textAlign: 'center' }}>
+              Edu Sinhala
+            </Text>
+            <Text style={{ fontSize: 20, color: '#333', textAlign: 'center', marginBottom: 40 }}>
+              Welcome to the Sinhala Learning App!
+            </Text>
             <TouchableOpacity
-              key={index}
-              style={[styles.card, { borderLeftColor: item.color }]}
-              onPress={() => router.push(item.route as any)}
+              style={{ backgroundColor: '#ba98e2ff', paddingVertical: 15, paddingHorizontal: 40, borderRadius: 30, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.2, shadowRadius: 4 }}
+              onPress={() => router.push('/(tabs)/features')}
             >
-              <View style={[styles.iconContainer, { backgroundColor: item.color + '20' }]}>
-                <Ionicons name={item.icon} size={32} color={item.color} />
-              </View>
-              <View style={styles.textContainer}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardDesc}>{item.description}</Text>
-              </View>
-              <Ionicons name="chevron-forward" size={20} color="#ccc" />
+              <Text style={{ color: '#fff', fontSize: 18, fontWeight: 'bold' }}>Get Started</Text>
             </TouchableOpacity>
-          ))}
+          </View>
         </View>
-      </ScrollView>
+      </ImageBackground>
     </SafeAreaView>
   );
 }
@@ -93,14 +55,30 @@ export default function DashboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: '#fff',
+  },
+  backgroundImage: {
+    flex: 1,
+    width: '100%',
+  },
+  overlayContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.85)',
+    padding: 30,
+    borderRadius: 20,
+    alignItems: 'center',
+    width: '90%',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderBottomWidth: 1,
     borderBottomColor: '#eee',
   },

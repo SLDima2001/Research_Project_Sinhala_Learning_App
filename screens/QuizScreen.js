@@ -26,13 +26,11 @@ export default function QuizScreen({ navigation }) {
 
     const submitQuiz = async () => {
         try {
-            // Using shared API service
             try {
                  const result = await submitQuiz({ answers });
                  setScore(result.score);
                  setSubmitted(true);
             } catch (err) {
-                 // Fallback if server unreachable
                  Alert.alert("Server Error", "Could not submit to backend. Using offline mode.");
                  setScore(100);
                  setSubmitted(true);

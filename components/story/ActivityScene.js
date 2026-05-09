@@ -15,7 +15,7 @@ export default function ActivityScene({ data, onNext, onScore }) {
         setIsCorrect(correct);
 
         if (correct) {
-            onScore(10); // Award points
+            onScore(10); 
             Alert.alert("Correct!", "Well done!", [
                 { text: "Continue", onPress: () => onNext(data.next_scene_id) }
             ]);
@@ -30,14 +30,12 @@ export default function ActivityScene({ data, onNext, onScore }) {
         <View style={styles.container}>
             <Text style={styles.debugInfo}>Type: {data.activity_type} | Opts: {data.options?.length}</Text>
             <Text style={styles.instruction}>{data.text || "Follow the instructions below:"}</Text>
-            
             <View style={styles.optionsContainer}>
                 {data.options.map((option, idx) => (
                     <TouchableOpacity 
                         key={idx} 
                         style={[
                             styles.optionCard,
-                            // selectedOption?.id === option.id && (isCorrect ? styles.correct : styles.incorrect)
                         ]}
                         onPress={() => handleOptionSelect(option)}
                     >
@@ -46,7 +44,6 @@ export default function ActivityScene({ data, onNext, onScore }) {
                                 <Text style={styles.placeholderText}>Image {idx + 1}</Text>
                             </View>
                         )}
-                        
                         {(data.activity_type === 'selection' || option.text) && (
                              <Text style={styles.optionText}>{option.text || "Option"}</Text>
                         )}
@@ -61,9 +58,9 @@ const styles = StyleSheet.create({
     container: { flex: 1, padding: 20, justifyContent: 'center', backgroundColor: '#fff' },
     debugInfo: { position: 'absolute', top: 40, right: 20, color: 'red', fontSize: 12 },
     instruction: { fontSize: 22, fontWeight: 'bold', marginBottom: 30, textAlign: 'center', color: '#333' },
-    optionsContainer: { width: '100%', alignItems: 'center' }, // Simplified: Column layout
+    optionsContainer: { width: '100%', alignItems: 'center' }, 
     optionCard: { 
-        width: '90%', // Full width cards
+        width: '90%', 
         padding: 20, 
         backgroundColor: '#f9f9f9', 
         borderRadius: 10, 
@@ -71,7 +68,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderWidth: 2,
         borderColor: '#ddd',
-        marginBottom: 15 // Margin instead of gap
+        marginBottom: 15 
     },
     imagePlaceholder: { width: 80, height: 80, marginBottom: 10, backgroundColor: '#ccc', justifyContent: 'center', alignItems: 'center' },
     placeholderText: { fontSize: 12, color: '#666' },

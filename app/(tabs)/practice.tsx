@@ -17,7 +17,7 @@ import { saveGameScore } from '@/services/progressService';
 const { width } = Dimensions.get('window');
 const CANVAS_SIZE = width - 40;
 
-// ⚠️ IMPORTANT: Replace with your computer's IP address
+
 const API_URL = 'http://192.168.1.108:5002/api';
 
 interface Letter {
@@ -98,16 +98,14 @@ export default function PracticeScreen() {
                 return;
             }
 
-            // Use fetch to read the file as base64
             const response = await fetch(imageUri);
             const blob = await response.blob();
 
-            // Convert blob to base64
             const base64 = await new Promise<string>((resolve, reject) => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
                     const result = reader.result as string;
-                    const base64Data = result.split(',')[1]; // Remove data:image/png;base64, prefix
+                    const base64Data = result.split(',')[1]; 
                     resolve(base64Data);
                 };
                 reader.onerror = reject;
@@ -130,7 +128,6 @@ export default function PracticeScreen() {
             if (data.success) {
                 setResult(data);
 
-                // Save score to progress service
                 if (user?.id) {
                     saveGameScore(user.id, {
                         module: 'handwriting',

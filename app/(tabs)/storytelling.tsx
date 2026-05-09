@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, ImageBackground } from 'react-native';
-import { getStories } from '@/services/api'; // Ensure aliases are correct
+import { getStories } from '@/services/api'; 
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 
-// Image Mapping
+
 const storyImages: Record<string, any> = {
     'story_dutugemunu': require('../../assets/images/story_cover_dutugemunu.png'),
     'story_prince_saliya': require('../../assets/images/story_cover_prince_saliya.png'),
-    // Default fallback if ID doesn't match
     'default': require('../../assets/adaptive-icon.png')
 };
 
